@@ -57,18 +57,11 @@ body {
     gap: 15px;
 }
 
-.logo-symbol {
-    background: var(--premium-gradient);
-    color: white;
-    width: 44px;
-    height: 44px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 12px;
-    font-weight: 800;
-    font-size: 1.3rem;
-    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+.header-logo {
+    height: 40px;
+    width: auto;
+    border-radius: 8px; /* Optional, just in case the logo needs a slight curve */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .logo-area h1 {

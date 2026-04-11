@@ -128,6 +128,8 @@ function updatePreview() {
     // Totals
     document.getElementById('prevSubtotal').innerText = `₹${subtotal.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
     document.getElementById('prevGrandTotal').innerText = `₹${subtotal.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+}
+
 // Interactive Sync (Edit on Preview)
 function syncInput(inputId, value) {
     const input = document.getElementById(inputId);
