@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChittorTech | Premium Bill Generator</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="main-header no-print">
+            <div class="logo-area">
+                <div class="logo-symbol">CT</div>
+                <h1>Chittor<span>Tech</span></h1>
+            </div>
+            <div class="header-actions">
+                <div class="toggle-container">
+                    <button id="invoiceToggle" class="toggle-btn active" onclick="setMode('INVOICE')">Invoice</button>
+                    <button id="quotationToggle" class="toggle-btn" onclick="setMode('QUOTATION')">Quotation</button>
+                </div>
+                <button class="primary-btn" onclick="window.print()">
+                    <i class="fa-solid fa-print"></i> Print Document
+                </button>
+            </div>
+        </header>
+
+        <main class="editor-grid">
+            <!-- Left Side: Form Input -->
+            <section class="controls-panel no-print">
+                <div class="card">
+                    <h3><i class="fa-solid fa-circle-info"></i> Document Details</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Document Number</label>
+                            <input type="text" id="docNumber" placeholder="CT/2024/001" oninput="updatePreview()">
+                        </div>
+                        <div class="form-group">
+                            <label>Date</label>
+                            <input type="date" id="docDate" oninput="updatePreview()">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3><i class="fa-solid fa-user"></i> Client Information</h3>
+                    <div class="form-group">
+                        <label>Client Name</label>
+                        <input type="text" id="clientName" placeholder="Client Name / Business" oninput="updatePreview()">
+                    </div>
+                    <div class="form-group">
+                        <label>Client Address</label>
+                        <textarea id="clientAddress" placeholder="Client Address" oninput="updatePreview()"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Client Contact</label>
+                        <input type="text" id="clientContact" placeholder="Email or Phone" oninput="updatePreview()">
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-list"></i> Items & Services</h3>
+                        <button class="add-btn" onclick="addItem()"><i class="fa-solid fa-plus"></i> Add Item</button>
+                    </div>
+                    <div id="itemsContainer">
+                        <!-- Items will be injected here -->
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3><i class="fa-solid fa-note-sticky"></i> Notes & Terms</h3>
+                    <textarea id="docNotes" placeholder="Payment terms, validity, etc." oninput="updatePreview()"></textarea>
+                </div>
+            </section>
+
+            <!-- Right Side: Live Preview -->
+            <section class="preview-panel">
+                <div id="print-area" class="a4-page">
+                    <div class="invoice-box">
+                        <div class="invoice-header">
+                            <div class="company-info">
+                                <img src="chittortech_logo_1775884354186.png" alt="ChittorTech Logo" class="preview-logo">
+                                <h2 class="company-name">ChittorTech</h2>
+                                <p class="company-tagline">Excellence in Technology Solutions</p>
+                                <div class="company-details">
+                                    <p><i class="fa-solid fa-location-dot"></i> Chittorgarh, Rajasthan, India</p>
+                                    <p><i class="fa-solid fa-envelope"></i> chittortech@gmail.com</p>
+                                    <p><i class="fa-solid fa-phone"></i> +91 7597901057, +91 8233816674</p>
+                                    <p><i class="fa-solid fa-globe"></i> chittortech.online</p>
+                                </div>
+                            </div>
+                            <div class="document-type">
+                                <h1 id="previewType">INVOICE</h1>
+                                <div class="meta-preview">
+                                    <p><strong>No:</strong> <span id="prevDocNumber" contenteditable="true" onblur="syncInput('docNumber', this.innerText)">---</span></p>
+                                    <p><strong>Date:</strong> <span id="prevDocDate" contenteditable="true" onblur="syncInput('docDate', this.innerText)">---</span></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="customer-section">
+                            <div class="bill-to-card">
+                                <p class="label">BILL TO:</p>
+                                <div class="bill-to-details">
+                                    <h3 id="prevClientName" contenteditable="true" onblur="syncInput('clientName', this.innerText)">Client Name</h3>
+                                    <p id="prevClientAddress" class="address-text" contenteditable="true" onblur="syncInput('clientAddress', this.innerText)">Client Address Details</p>
+                                    <p id="prevClientContact" contenteditable="true" onblur="syncInput('clientContact', this.innerText)">Contact Info</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <table class="items-table">
+                            <thead>
+                                <tr>
+                                    <th>Description</th>
+                                    <th class="text-right">Qty</th>
+                                    <th class="text-right">Rate</th>
+                                    <th class="text-right">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody id="previewItems">
+                                <!-- Items injected by JS -->
+                            </tbody>
+                        </table>
+
+                        <div class="totals-section">
+                            <div class="notes-area">
+                                <p class="label">Notes / Terms</p>
+                                <p id="prevNotes" class="notes-text" contenteditable="true" onblur="syncInput('docNotes', this.innerText)">Thank you for your business.</p>
+                            </div>
+                            <div class="amount-area">
+                                <div class="amount-row">
+                                    <span>Subtotal</span>
+                                    <span id="prevSubtotal">₹0.00</span>
+                                </div>
+                                <div class="amount-row total">
+                                    <span>Total Amount</span>
+                                    <span id="prevGrandTotal">₹0.00</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="invoice-footer">
+                            <p style="width: 100%; text-align: center;">Computer generated document. No signature required.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
