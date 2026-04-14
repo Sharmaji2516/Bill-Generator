@@ -1,21 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Premium Bill Generator</title>
+    <title>Chittortech Systems</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+
 <body>
     <div class="app-container">
         <header class="main-header no-print">
             <div class="logo-area">
-                <h1>Bill<span>Generator</span></h1>
+                <img src="chittortech_logo_1775884354186.png" alt="ChittorTech Logo" class="header-logo">
+                <h1>Chittor<span>tech</span></h1>
             </div>
+            <nav class="main-nav">
+                <a href="index.html" class="nav-link active">Bill Generator</a>
+            </nav>
             <div class="header-actions">
                 <div class="toggle-container">
                     <button id="invoiceToggle" class="toggle-btn active" onclick="setMode('INVOICE')">Invoice</button>
@@ -48,7 +55,8 @@
                     <h3><i class="fa-solid fa-user"></i> Client Information</h3>
                     <div class="form-group">
                         <label>Client Name</label>
-                        <input type="text" id="clientName" placeholder="Client Name / Business" oninput="updatePreview()">
+                        <input type="text" id="clientName" placeholder="Client Name / Business"
+                            oninput="updatePreview()">
                     </div>
                     <div class="form-group">
                         <label>Client Address</label>
@@ -72,17 +80,23 @@
 
                 <div class="card">
                     <h3><i class="fa-solid fa-note-sticky"></i> Notes & Terms</h3>
-                    <textarea id="docNotes" placeholder="Payment terms, validity, etc." oninput="updatePreview()"></textarea>
+                    <textarea id="docNotes" placeholder="Payment terms, validity, etc."
+                        oninput="updatePreview()"></textarea>
                 </div>
             </section>
 
             <!-- Right Side: Live Preview -->
             <section class="preview-panel">
                 <div id="print-area" class="a4-page">
+                    <div class="print-header">
+                        <img src="chittortech_logo_1775884354186.png" alt="ChittorTech Logo">
+                        <h1>Chittor<span>tech</span></h1>
+                    </div>
                     <div class="invoice-box">
                         <div class="invoice-header">
                             <div class="company-info">
-                                <img src="chittortech_logo_1775884354186.png" alt="ChittorTech Logo" class="preview-logo">
+                                <img src="chittortech_logo_1775884354186.png" alt="ChittorTech Logo"
+                                    class="preview-logo">
                                 <h2 class="company-name">ChittorTech</h2>
                                 <p class="company-tagline">Excellence in Technology Solutions</p>
                                 <div class="company-details">
@@ -95,8 +109,10 @@
                             <div class="document-type">
                                 <h1 id="previewType">INVOICE</h1>
                                 <div class="meta-preview">
-                                    <p><strong>No:</strong> <span id="prevDocNumber" contenteditable="true" onblur="syncInput('docNumber', this.innerText)">---</span></p>
-                                    <p><strong>Date:</strong> <span id="prevDocDate" contenteditable="true" onblur="syncInput('docDate', this.innerText)">---</span></p>
+                                    <p><strong>No:</strong> <span id="prevDocNumber" contenteditable="true"
+                                            onblur="syncInput('docNumber', this.innerText)">---</span></p>
+                                    <p><strong>Date:</strong> <span id="prevDocDate" contenteditable="true"
+                                            onblur="syncInput('docDate', this.innerText)">---</span></p>
                                 </div>
                             </div>
                         </div>
@@ -105,9 +121,12 @@
                             <div class="bill-to-card">
                                 <p class="label">BILL TO:</p>
                                 <div class="bill-to-details">
-                                    <h3 id="prevClientName" contenteditable="true" onblur="syncInput('clientName', this.innerText)">Client Name</h3>
-                                    <p id="prevClientAddress" class="address-text" contenteditable="true" onblur="syncInput('clientAddress', this.innerText)">Client Address Details</p>
-                                    <p id="prevClientContact" contenteditable="true" onblur="syncInput('clientContact', this.innerText)">Contact Info</p>
+                                    <h3 id="prevClientName" contenteditable="true"
+                                        onblur="syncInput('clientName', this.innerText)">Client Name</h3>
+                                    <p id="prevClientAddress" class="address-text" contenteditable="true"
+                                        onblur="syncInput('clientAddress', this.innerText)">Client Address Details</p>
+                                    <p id="prevClientContact" contenteditable="true"
+                                        onblur="syncInput('clientContact', this.innerText)">Contact Info</p>
                                 </div>
                             </div>
                         </div>
@@ -129,7 +148,8 @@
                         <div class="totals-section">
                             <div class="notes-area">
                                 <p class="label">Notes / Terms</p>
-                                <p id="prevNotes" class="notes-text" contenteditable="true" onblur="syncInput('docNotes', this.innerText)">Thank you for your business.</p>
+                                <p id="prevNotes" class="notes-text" contenteditable="true"
+                                    onblur="syncInput('docNotes', this.innerText)">Thank you for your business.</p>
                             </div>
                             <div class="amount-area">
                                 <div class="amount-row">
@@ -144,7 +164,8 @@
                         </div>
 
                         <div class="invoice-footer">
-                            <p style="width: 100%; text-align: center;">Computer generated document. No signature required.</p>
+                            <p style="width: 100%; text-align: center;">Computer generated document. No signature
+                                required.</p>
                         </div>
                     </div>
                 </div>
@@ -154,4 +175,5 @@
 
     <script src="script.js"></script>
 </body>
+
 </html>
