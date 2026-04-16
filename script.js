@@ -3,11 +3,57 @@ let items = [
     { id: 1, description: 'Premium Web Design Package', qty: 1, rate: 25000 }
 ];
 
+// Local Storage Functions
+function saveData() {
+    const data = {
+        mode: currentMode,
+        docNumber: document.getElementById('docNumber').value,
+        docDate: document.getElementById('docDate').value,
+        clientName: document.getElementById('clientName').value,
+        clientAddress: document.getElementById('clientAddress').value,
+        clientContact: document.getElementById('clientContact').value,
+        docNotes: document.getElementById('docNotes').value,
+        items: items
+    };
+    localStorage.setItem('chittortech_bill_draft', JSON.stringify(data));
+}
+
+function loadData() {
+    const saved = localStorage.getItem('chittortech_bill_draft');
+    if (saved) {
+        try {
+            const data = JSON.parse(saved);
+            
+            if (data.docNumber !== undefined) document.getElementById('docNumber').value = data.docNumber;
+            if (data.docDate) document.getElementById('docDate').value = data.docDate;
+            if (data.clientName !== undefined) document.getElementById('clientName').value = data.clientName;
+            if (data.clientAddress !== undefined) document.getElementById('clientAddress').value = data.clientAddress;
+            if (data.clientContact !== undefined) document.getElementById('clientContact').value = data.clientContact;
+            if (data.docNotes !== undefined) document.getElementById('docNotes').value = data.docNotes;
+            
+            if (data.items && data.items.length > 0) {
+                items = data.items;
+            }
+            if (data.mode) {
+                currentMode = data.mode;
+            }
+            
+            document.getElementById('invoiceToggle').classList.toggle('active', currentMode === 'INVOICE');
+            document.getElementById('quotationToggle').classList.toggle('active', currentMode === 'QUOTATION');
+            document.getElementById('previewType').innerText = currentMode;
+        } catch (e) {
+            console.error('Failed to load draft:', e);
+        }
+    }
+}
+
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
     // Set default date to today
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('docDate').value = today;
+
+    loadData();
 
     renderItems();
     updatePreview();
@@ -128,6 +174,9 @@ function updatePreview() {
     // Totals
     document.getElementById('prevSubtotal').innerText = `₹${subtotal.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
     document.getElementById('prevGrandTotal').innerText = `₹${subtotal.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+
+    // Auto-save draft
+    saveData();
 }
 
 // Interactive Sync (Edit on Preview)
