@@ -13,6 +13,7 @@ function saveData() {
         clientAddress: document.getElementById('clientAddress').value,
         clientContact: document.getElementById('clientContact').value,
         docNotes: document.getElementById('docNotes').value,
+        paymentInfo: document.getElementById('paymentInfo').value,
         items: items
     };
     localStorage.setItem('chittortech_bill_draft', JSON.stringify(data));
@@ -30,6 +31,7 @@ function loadData() {
             if (data.clientAddress !== undefined) document.getElementById('clientAddress').value = data.clientAddress;
             if (data.clientContact !== undefined) document.getElementById('clientContact').value = data.clientContact;
             if (data.docNotes !== undefined) document.getElementById('docNotes').value = data.docNotes;
+            if (data.paymentInfo !== undefined) document.getElementById('paymentInfo').value = data.paymentInfo;
             
             if (data.items && data.items.length > 0) {
                 items = data.items;
@@ -135,6 +137,7 @@ function updatePreview() {
     const clientAddr = document.getElementById('clientAddress').value || 'Client Address';
     const clientCont = document.getElementById('clientContact').value || 'Contact Info';
     const notes = document.getElementById('docNotes').value || 'Thank you for choosing ChittorTech. We appreciate your business.';
+    const paymentInfo = document.getElementById('paymentInfo').value || 'Add bank or check details here...';
 
     if (docDate !== '---') {
         const d = new Date(docDate);
@@ -150,6 +153,7 @@ function updatePreview() {
     document.getElementById('prevClientAddress').innerText = clientAddr;
     document.getElementById('prevClientContact').innerText = clientCont;
     document.getElementById('prevNotes').innerText = notes;
+    document.getElementById('prevPaymentInfo').innerText = paymentInfo;
 
     // Items Table
     const tableBody = document.getElementById('previewItems');

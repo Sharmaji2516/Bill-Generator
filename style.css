@@ -344,6 +344,10 @@ input:focus, textarea:focus {
 
 .invoice-box {
     color: #334155;
+    border: 2px solid #000;
+    padding: 25px;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
 }
 
 .invoice-header {
@@ -427,10 +431,10 @@ input:focus, textarea:focus {
 }
 
 .label {
-    font-size: 0.75rem;
+    font-size: 0.85rem;
     font-weight: 800;
     letter-spacing: 1px;
-    color: var(--text-muted);
+    color: var(--text-main);
     margin-bottom: 10px;
     text-transform: uppercase;
 }
@@ -447,22 +451,34 @@ input:focus, textarea:focus {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 4rem;
+    border: 1px solid #000;
 }
 
 .items-table th {
     background: #f8fafc;
     text-align: left;
     padding: 15px;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
+    font-weight: 800;
     text-transform: uppercase;
-    color: var(--text-muted);
+    color: var(--text-main);
     border-bottom: 2px solid var(--primary);
+    border-right: 1px solid #000;
+}
+
+.items-table th:last-child {
+    border-right: none;
 }
 
 .items-table td {
     padding: 15px;
-    border-bottom: 1px solid #f1f5f9;
+    border-bottom: 1px solid #000;
+    border-right: 1px solid #000;
     font-size: 1.05rem;
+}
+
+.items-table td:last-child {
+    border-right: none;
 }
 
 .text-right { text-align: right; }

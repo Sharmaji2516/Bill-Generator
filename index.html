@@ -83,6 +83,12 @@
                     <textarea id="docNotes" placeholder="Payment terms, validity, etc."
                         oninput="updatePreview()"></textarea>
                 </div>
+
+                <div class="card">
+                    <h3><i class="fa-solid fa-building-columns"></i> Payment Information</h3>
+                    <textarea id="paymentInfo" placeholder="Bank account or check details, UPI, etc."
+                        oninput="updatePreview()"></textarea>
+                </div>
             </section>
 
             <!-- Right Side: Live Preview -->
@@ -150,6 +156,10 @@
                                 <p class="label">Notes / Terms</p>
                                 <p id="prevNotes" class="notes-text" contenteditable="true"
                                     onblur="syncInput('docNotes', this.innerText)">Thank you for your business.</p>
+                                    
+                                <p class="label" style="margin-top: 30px;">Payment Details</p>
+                                <p id="prevPaymentInfo" class="notes-text" contenteditable="true"
+                                    onblur="syncInput('paymentInfo', this.innerText)">Add bank or check details here...</p>
                             </div>
                             <div class="amount-area">
                                 <div class="amount-row">
