@@ -13,10 +13,18 @@ function saveData() {
         clientAddress: document.getElementById('clientAddress').value,
         clientContact: document.getElementById('clientContact').value,
         docNotes: document.getElementById('docNotes').value,
+        paymentMode: document.getElementById('paymentMode').value,
         paymentInfo: document.getElementById('paymentInfo').value,
         items: items
     };
     localStorage.setItem('chittortech_bill_draft', JSON.stringify(data));
+}
+
+function resetDraft() {
+    if (confirm("Are you sure you want to reset all fields to defaults? This will clear your current draft.")) {
+        localStorage.removeItem('chittortech_bill_draft');
+        window.location.reload();
+    }
 }
 
 function loadData() {
@@ -31,6 +39,7 @@ function loadData() {
             if (data.clientAddress !== undefined) document.getElementById('clientAddress').value = data.clientAddress;
             if (data.clientContact !== undefined) document.getElementById('clientContact').value = data.clientContact;
             if (data.docNotes !== undefined) document.getElementById('docNotes').value = data.docNotes;
+            if (data.paymentMode !== undefined) document.getElementById('paymentMode').value = data.paymentMode;
             if (data.paymentInfo !== undefined) document.getElementById('paymentInfo').value = data.paymentInfo;
             
             if (data.items && data.items.length > 0) {
@@ -136,7 +145,8 @@ function updatePreview() {
     const clientName = document.getElementById('clientName').value || 'Client Name';
     const clientAddr = document.getElementById('clientAddress').value || 'Client Address';
     const clientCont = document.getElementById('clientContact').value || 'Contact Info';
-    const notes = document.getElementById('docNotes').value || 'Thank you for choosing ChittorTech. We appreciate your business.';
+    const notes = document.getElementById('docNotes').value || 'GST not applicable.';
+    const paymentMode = document.getElementById('paymentMode').value || 'Bank Transfer';
     const paymentInfo = document.getElementById('paymentInfo').value || 'Add bank or check details here...';
 
     if (docDate !== '---') {
@@ -153,6 +163,7 @@ function updatePreview() {
     document.getElementById('prevClientAddress').innerText = clientAddr;
     document.getElementById('prevClientContact').innerText = clientCont;
     document.getElementById('prevNotes').innerText = notes;
+    document.getElementById('prevPaymentMode').innerText = paymentMode;
     document.getElementById('prevPaymentInfo').innerText = paymentInfo;
 
     // Items Table
