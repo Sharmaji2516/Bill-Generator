@@ -188,7 +188,7 @@ body {
 /* App Layout */
 .editor-grid {
     display: grid;
-    grid-template-columns: 480px 1fr;
+    grid-template-columns: 650px 1fr;
     height: calc(100vh - 81px);
 }
 

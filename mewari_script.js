@@ -1,6 +1,6 @@
 let currentMode = 'INVOICE';
 let items = [
-    { id: 1, description: 'Premium Web Design Package', qty: 1, rate: 25000 }
+    { id: 1, description: 'Mango Achar', weight: '500g', rate: 400, amount: 200 }
 ];
 
 // Local Storage Functions
@@ -17,18 +17,18 @@ function saveData() {
         paymentInfo: document.getElementById('paymentInfo').value,
         items: items
     };
-    localStorage.setItem('chittortech_bill_draft', JSON.stringify(data));
+    localStorage.setItem('mewari_bill_draft', JSON.stringify(data));
 }
 
 function resetDraft() {
     if (confirm("Are you sure you want to reset all fields to defaults? This will clear your current draft.")) {
-        localStorage.removeItem('chittortech_bill_draft');
+        localStorage.removeItem('mewari_bill_draft');
         window.location.reload();
     }
 }
 
 function loadData() {
-    const saved = localStorage.getItem('chittortech_bill_draft');
+    const saved = localStorage.getItem('mewari_bill_draft');
     if (saved) {
         try {
             const data = JSON.parse(saved);
@@ -41,7 +41,7 @@ function loadData() {
             if (data.docNotes !== undefined) document.getElementById('docNotes').value = data.docNotes;
             if (data.paymentMode !== undefined) document.getElementById('paymentMode').value = data.paymentMode;
             if (data.paymentInfo !== undefined) document.getElementById('paymentInfo').value = data.paymentInfo;
-            
+
             if (data.items && data.items.length > 0) {
                 items = data.items;
             }
@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const currentYear = new Date().getFullYear();
     const docPrefixEl = document.getElementById('docPrefix');
     if (docPrefixEl) {
-        docPrefixEl.innerText = `CT/${currentYear}/`;
+        docPrefixEl.innerText = `MA/${currentYear}/`;
     }
 
     loadData();
@@ -93,8 +93,9 @@ function addItem() {
     const newItem = {
         id: Date.now(),
         description: '',
-        qty: 1,
-        rate: 0
+        weight: '',
+        rate: 0,
+        amount: 0
     };
     items.push(newItem);
     renderItems();
@@ -114,7 +115,7 @@ function removeItem(id) {
 function updateItem(id, field, value) {
     const item = items.find(i => i.id === id);
     if (item) {
-        if (field === 'qty' || field === 'rate') {
+        if (field === 'rate' || field === 'amount') {
             item[field] = parseFloat(value) || 0;
         } else {
             item[field] = value;
@@ -130,13 +131,16 @@ function renderItems() {
     items.forEach(item => {
         const div = document.createElement('div');
         div.className = 'item-row';
+        div.style.gridTemplateColumns = "2fr 1fr 1fr 1fr 40px";
         div.innerHTML = `
-            <input type="text" placeholder="Description" value="${item.description}" 
+            <input type="text" placeholder="Pickle Name" value="${item.description}" 
                 oninput="updateItem(${item.id}, 'description', this.value)">
-            <input type="number" placeholder="Qty" value="${item.qty}" 
-                oninput="updateItem(${item.id}, 'qty', this.value)">
-            <input type="number" placeholder="Rate" value="${item.rate}" 
+            <input type="text" placeholder="Weight" value="${item.weight || ''}" 
+                oninput="updateItem(${item.id}, 'weight', this.value)">
+            <input type="number" placeholder="Rate/Kg" value="${item.rate}" 
                 oninput="updateItem(${item.id}, 'rate', this.value)">
+            <input type="number" placeholder="Total Amount" value="${item.amount || 0}" 
+                oninput="updateItem(${item.id}, 'amount', this.value)">
             <button class="icon-btn" onclick="removeItem(${item.id})">
                 <i class="fa-solid fa-trash"></i>
             </button>
@@ -148,7 +152,7 @@ function renderItems() {
 function updatePreview() {
     // Basic Details
     const currentYear = new Date().getFullYear();
-    const prefix = `CT/${currentYear}/`;
+    const prefix = `MA/${currentYear}/`;
     const inputNum = document.getElementById('docNumber').value || '001';
     const docNum = prefix + inputNum;
     let docDate = document.getElementById('docDate').value || '---';
@@ -183,21 +187,20 @@ function updatePreview() {
     let subtotal = 0;
 
     items.forEach(item => {
-        const amount = item.qty * item.rate;
+        const amount = item.amount || 0;
         subtotal += amount;
 
         const tr = document.createElement('tr');
         tr.innerHTML = `
-            <td>${item.description || '<i>New Service/Item</i>'}</td>
-            <td class="text-right">${item.qty}</td>
+            <td>${item.description || '<i>New Pickle</i>'}</td>
+            <td>${item.weight || '-'}</td>
             <td class="text-right">₹${item.rate.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
             <td class="text-right">₹${amount.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
         `;
         tableBody.appendChild(tr);
     });
 
-    // Totals
-    document.getElementById('prevSubtotal').innerText = `₹${subtotal.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+    // Totals (Auto-Calculated)
     document.getElementById('prevGrandTotal').innerText = `₹${subtotal.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
 
     // Auto-save draft
