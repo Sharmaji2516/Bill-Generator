@@ -178,10 +178,11 @@
                                 <p id="prevNotes" class="notes-text" contenteditable="true"
                                     onblur="syncInput('docNotes', this.innerText)">GST not applicable.</p>
                                     
-                                <p class="label" style="margin-top: 30px;">Payment Details</p>
-                                <p id="prevPaymentMode" class="notes-text" style="font-weight: 700; margin-bottom: 5px;">Bank Transfer</p>
+                                <p class="label" style="margin-top: 30px;">
+                                    Payment Mode: <span id="prevPaymentMode" style="color: var(--text-main);">Bank Transfer</span>
+                                </p>
                                 <p id="prevPaymentInfo" class="notes-text" contenteditable="true"
-                                    onblur="syncInput('paymentInfo', this.innerText)">Add bank or check details here...</p>
+                                    onblur="syncInput('paymentInfo', this.innerText)" style="display: none;"></p>
                             </div>
                             <div class="amount-area">
                                 <div class="amount-row">

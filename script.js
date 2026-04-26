@@ -157,7 +157,7 @@ function updatePreview() {
     const clientCont = document.getElementById('clientContact').value || 'Contact Info';
     const notes = document.getElementById('docNotes').value || 'GST not applicable.';
     const paymentMode = document.getElementById('paymentMode').value || 'Bank Transfer';
-    const paymentInfo = document.getElementById('paymentInfo').value || 'Add bank or check details here...';
+    const paymentInfo = document.getElementById('paymentInfo').value;
 
     if (docDate !== '---') {
         const d = new Date(docDate);
@@ -174,7 +174,15 @@ function updatePreview() {
     document.getElementById('prevClientContact').innerText = clientCont;
     document.getElementById('prevNotes').innerText = notes;
     document.getElementById('prevPaymentMode').innerText = paymentMode;
-    document.getElementById('prevPaymentInfo').innerText = paymentInfo;
+    
+    const prevPaymentInfoEl = document.getElementById('prevPaymentInfo');
+    if (paymentInfo && paymentInfo.trim() !== '') {
+        prevPaymentInfoEl.innerText = paymentInfo;
+        prevPaymentInfoEl.style.display = 'block';
+    } else {
+        prevPaymentInfoEl.innerText = '';
+        prevPaymentInfoEl.style.display = 'none';
+    }
 
     // Items Table
     const tableBody = document.getElementById('previewItems');
