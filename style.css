@@ -616,7 +616,23 @@ input:focus, textarea:focus {
     }
 
     .totals-section {
-        page-break-inside: avoid;
+        display: flex !important;
+        flex-direction: column;
+        page-break-inside: auto;
+    }
+
+    .amount-area {
+        order: 1;
+        align-self: flex-end;
+        width: 50%;
+        margin-bottom: 2rem;
+    }
+
+    .notes-area {
+        order: 2;
+        page-break-before: always;
+        width: 100%;
+        padding-top: 1rem;
     }
 
     .invoice-footer {
