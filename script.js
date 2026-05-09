@@ -12,7 +12,6 @@ function saveData() {
         clientName: document.getElementById('clientName').value,
         clientAddress: document.getElementById('clientAddress').value,
         clientContact: document.getElementById('clientContact').value,
-        docNotes: document.getElementById('docNotes').value,
         paymentMode: document.getElementById('paymentMode').value,
         paymentInfo: document.getElementById('paymentInfo').value,
         items: items
@@ -38,7 +37,6 @@ function loadData() {
             if (data.clientName !== undefined) document.getElementById('clientName').value = data.clientName;
             if (data.clientAddress !== undefined) document.getElementById('clientAddress').value = data.clientAddress;
             if (data.clientContact !== undefined) document.getElementById('clientContact').value = data.clientContact;
-            if (data.docNotes !== undefined) document.getElementById('docNotes').value = data.docNotes;
             if (data.paymentMode !== undefined) document.getElementById('paymentMode').value = data.paymentMode;
             if (data.paymentInfo !== undefined) document.getElementById('paymentInfo').value = data.paymentInfo;
             
@@ -88,6 +86,8 @@ function setMode(mode) {
     document.getElementById('previewType').innerText = mode;
     updatePreview();
 }
+
+
 
 function addItem() {
     const newItem = {
@@ -155,7 +155,6 @@ function updatePreview() {
     const clientName = document.getElementById('clientName').value || 'Client Name';
     const clientAddr = document.getElementById('clientAddress').value || 'Client Address';
     const clientCont = document.getElementById('clientContact').value || 'Contact Info';
-    const notes = document.getElementById('docNotes').value || 'GST not applicable.';
     const paymentMode = document.getElementById('paymentMode').value || 'Bank Transfer';
     const paymentInfo = document.getElementById('paymentInfo').value;
 
@@ -172,8 +171,9 @@ function updatePreview() {
     document.getElementById('prevClientName').innerText = clientName;
     document.getElementById('prevClientAddress').innerText = clientAddr;
     document.getElementById('prevClientContact').innerText = clientCont;
-    document.getElementById('prevNotes').innerText = notes;
     document.getElementById('prevPaymentMode').innerText = paymentMode;
+
+
     
     const prevPaymentInfoEl = document.getElementById('prevPaymentInfo');
     if (paymentInfo && paymentInfo.trim() !== '') {

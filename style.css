@@ -630,14 +630,14 @@ input:focus, textarea:focus {
 
     .notes-area {
         order: 2;
-        page-break-before: always;
         width: 100%;
         padding-top: 1rem;
+        page-break-inside: avoid;
     }
 
     .invoice-footer {
-        margin-top: 2rem !important;
-        padding-top: 1rem !important;
+        margin-top: 0.5rem !important;
+        padding-top: 0.5rem !important;
         page-break-inside: avoid;
     }
 }
@@ -796,4 +796,75 @@ input:focus, textarea:focus {
 
 .editor-grid {
     flex: 1;
+}
+
+/* Print Terms Styles */
+.print-terms {
+    display: none;
+}
+
+@media print {
+    .print-terms {
+        display: block !important;
+        page-break-before: always;
+        padding: 20px;
+        color: #000;
+        background: white;
+    }
+    .print-terms h1 {
+        font-size: 1.8rem;
+        margin-bottom: 15px;
+        text-align: center;
+        border-bottom: 2px solid #000;
+        padding-bottom: 5px;
+        text-transform: uppercase;
+    }
+    .print-terms h1 span {
+        color: #000; /* Use black for print */
+    }
+    .print-terms h2 {
+        font-size: 1.1rem;
+        margin-top: 15px;
+        margin-bottom: 5px;
+        color: #000;
+        font-weight: 700;
+    }
+    .print-terms h2 span {
+        color: #000;
+    }
+    .print-terms p, .print-terms li {
+        font-size: 0.85rem;
+        line-height: 1.4;
+        margin-bottom: 5px;
+    }
+    .print-terms ul {
+        list-style-type: none;
+        padding-left: 15px;
+    }
+    .print-terms ul li {
+        position: relative;
+        padding-left: 15px;
+    }
+    .print-terms ul li::before {
+        content: "-";
+        position: absolute;
+        left: 0;
+    }
+    .print-terms .sub-section {
+        margin-left: 15px;
+        margin-bottom: 10px;
+        padding: 0;
+        background: none;
+        border: none;
+    }
+    .print-terms .sub-section h3 {
+        font-size: 0.95rem;
+        font-weight: 600;
+        margin-bottom: 3px;
+        color: #000;
+    }
+    /* Prevent headings from being orphaned */
+    .print-terms h2, .print-terms h3 {
+        page-break-after: avoid;
+    }
 }

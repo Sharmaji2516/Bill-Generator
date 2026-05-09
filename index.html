@@ -23,6 +23,7 @@
             <nav class="main-nav">
                 <a href="index.html" class="nav-link active">ChittorTech</a>
                 <a href="mewari.html" class="nav-link">Mewari Achar</a>
+                <a href="terms.html" class="nav-link">Terms & Conditions</a>
             </nav>
             <div class="header-actions">
                 <div class="toggle-container">
@@ -85,11 +86,9 @@
                     </div>
                 </div>
 
-                <div class="card">
-                    <h3><i class="fa-solid fa-note-sticky"></i> Notes & Terms</h3>
-                    <textarea id="docNotes" placeholder="Payment terms, validity, etc."
-                        oninput="updatePreview()">GST not applicable.</textarea>
-                </div>
+
+
+
 
                 <div class="card">
                     <h3><i class="fa-solid fa-building-columns"></i> Payment Information</h3>
@@ -174,9 +173,7 @@
 
                         <div class="totals-section">
                             <div class="notes-area">
-                                <p class="label">Notes / Terms</p>
-                                <p id="prevNotes" class="notes-text" contenteditable="true"
-                                    onblur="syncInput('docNotes', this.innerText)">GST not applicable.</p>
+
                                     
                                 <p class="label" style="margin-top: 30px;">
                                     Payment Mode: <span id="prevPaymentMode" style="color: var(--text-main);">Bank Transfer</span>
@@ -201,6 +198,8 @@
                                 required.</p>
                         </div>
                     </div>
+                    
+
                 </div>
             </section>
         </main>
