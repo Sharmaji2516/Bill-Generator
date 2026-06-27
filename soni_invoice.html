@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chittortech Systems</title>
+    <title>Chittortech Systems - Soni Super Market</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -279,6 +279,28 @@
     </div>
 
     <script src="script.js"></script>
+    <script>
+        // Wait for script.js to load and initialize
+        setTimeout(() => {
+            // Pre-fill client details
+            document.getElementById('clientName').value = "Soni Super Market";
+            document.getElementById('docNumber').value = "002"; // Invoice number for extra work
+            document.getElementById('clientAddress').value = "Soni Super Market";
+            
+            // Set the specific item for additional charges
+            // You can change the rate (currently 1000) to whatever you agreed upon
+            items = [
+                { id: Date.now(), description: 'Additional Changes requested after delivery (within 5 days)', qty: 1, rate: 1000 }
+            ];
+            
+            // Refresh preview
+            renderItems();
+            updatePreview();
+            
+            // Save to draft so it loads correctly
+            saveData();
+        }, 100);
+    </script>
 </body>
 
 </html>

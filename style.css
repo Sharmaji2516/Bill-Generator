@@ -515,10 +515,12 @@ input:focus, textarea:focus {
     margin-top: 6rem;
     padding-top: 2rem;
     border-top: 1px solid #f1f5f9;
-    text-align: center;
+    display: block;
     color: var(--text-muted);
     font-size: 0.85rem;
+    width: 100%;
 }
+
 
 .branding span {
     color: var(--primary);
@@ -638,7 +640,9 @@ input:focus, textarea:focus {
     .invoice-footer {
         margin-top: 0.5rem !important;
         padding-top: 0.5rem !important;
+        display: block !important;
         page-break-inside: avoid;
+        width: 100% !important;
     }
 }
 
@@ -868,3 +872,135 @@ input:focus, textarea:focus {
         page-break-after: avoid;
     }
 }
+
+.digital-seal-wrapper {
+    display: none; /* Controlled by JavaScript (set to flex dynamically) */
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Corporate Adobe/DocuSign style Verification Box */
+.adobe-sign-signature-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Distribute contents horizontally */
+    gap: 14px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: #f8fafc;
+    padding: 12px 20px;
+    text-align: left;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.sig-left-group {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.sig-logo-area {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    border-radius: 6px;
+    background: white;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    border: 1.5px solid #000000; /* Distinct black border for logo */
+}
+
+.sig-logo {
+    width: 44px; /* Increased logo size */
+    height: 44px;
+    object-fit: contain;
+}
+
+.sig-details-left {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5px;
+}
+
+.sig-details-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end; /* Align elements to the right edge */
+    text-align: right;
+    gap: 2.5px;
+}
+
+.sig-title {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+}
+
+.sig-status {
+    font-size: 0.8rem;
+    color: var(--text-main);
+    font-weight: 500;
+}
+
+.status-highlight {
+    font-weight: 700;
+}
+
+.sig-id, .sig-timestamp {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+}
+
+.sig-id .monospaced, .sig-timestamp span {
+    font-family: monospace;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.sig-org {
+    font-size: 0.62rem;
+    font-weight: 600;
+    margin-top: 2px;
+}
+
+/* Color Presets for Signature Box (Left border and color accents) */
+/* 1. Teal Theme */
+.digital-seal-wrapper.style-teal .adobe-sign-signature-box {
+    border-left: 4px solid #0d9488;
+}
+.digital-seal-wrapper.style-teal .status-highlight { color: #0d9488; }
+.digital-seal-wrapper.style-teal .sig-org { color: #0f766e; }
+
+/* 2. Green Theme */
+.digital-seal-wrapper.style-green .adobe-sign-signature-box {
+    border-left: 4px solid #16a34a;
+}
+.digital-seal-wrapper.style-green .status-highlight { color: #16a34a; }
+.digital-seal-wrapper.style-green .sig-org { color: #15803d; }
+
+/* 3. Blue Theme */
+.digital-seal-wrapper.style-blue .adobe-sign-signature-box {
+    border-left: 4px solid #2563eb;
+}
+.digital-seal-wrapper.style-blue .status-highlight { color: #2563eb; }
+.digital-seal-wrapper.style-blue .sig-org { color: #1d4ed8; }
+
+/* 4. Charcoal Theme */
+.digital-seal-wrapper.style-charcoal .adobe-sign-signature-box {
+    border-left: 4px solid #374151;
+}
+.digital-seal-wrapper.style-charcoal .status-highlight { color: #374151; }
+.digital-seal-wrapper.style-charcoal .sig-org { color: #1f2937; }
+
+/* 5. Red Theme */
+.digital-seal-wrapper.style-red .adobe-sign-signature-box {
+    border-left: 4px solid #dc2626;
+}
+.digital-seal-wrapper.style-red .status-highlight { color: #dc2626; }
+.digital-seal-wrapper.style-red .sig-org { color: #b91c1c; }
+
+

@@ -14,6 +14,10 @@ function saveData() {
         clientContact: document.getElementById('clientContact').value,
         paymentMode: document.getElementById('paymentMode').value,
         paymentInfo: document.getElementById('paymentInfo').value,
+        sealStatusText: document.getElementById('sealStatusText').value,
+        sealStyle: document.getElementById('sealStyle').value,
+        sealCustomNumber: document.getElementById('sealCustomNumber').value,
+        sealTimestampText: document.getElementById('sealTimestampText').value,
         items: items
     };
     localStorage.setItem('chittortech_bill_draft', JSON.stringify(data));
@@ -39,6 +43,10 @@ function loadData() {
             if (data.clientContact !== undefined) document.getElementById('clientContact').value = data.clientContact;
             if (data.paymentMode !== undefined) document.getElementById('paymentMode').value = data.paymentMode;
             if (data.paymentInfo !== undefined) document.getElementById('paymentInfo').value = data.paymentInfo;
+            if (data.sealStatusText !== undefined) document.getElementById('sealStatusText').value = data.sealStatusText;
+            if (data.sealStyle !== undefined) document.getElementById('sealStyle').value = data.sealStyle;
+            if (data.sealCustomNumber !== undefined) document.getElementById('sealCustomNumber').value = data.sealCustomNumber;
+            if (data.sealTimestampText !== undefined) document.getElementById('sealTimestampText').value = data.sealTimestampText;
             
             if (data.items && data.items.length > 0) {
                 items = data.items;
@@ -70,6 +78,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     loadData();
+
+    // Default timestamp if empty
+    const timestampInput = document.getElementById('sealTimestampText');
+    if (timestampInput && (!timestampInput.value || timestampInput.value.trim() === '')) {
+        const now = new Date();
+        const optionsDate = { year: 'numeric', month: 'short', day: 'numeric' };
+        const dateStr = now.toLocaleDateString('en-US', optionsDate);
+        const timeStr = now.toTimeString().split(' ')[0].substring(0, 5); // "15:07"
+        timestampInput.value = `${dateStr}, ${timeStr} IST`;
+    }
 
     renderItems();
     updatePreview();
@@ -182,6 +200,38 @@ function updatePreview() {
     } else {
         prevPaymentInfoEl.innerText = '';
         prevPaymentInfoEl.style.display = 'none';
+    }
+
+    // Digital Signature Seal Preview Updates
+    const digitalSealWrapper = document.getElementById('digitalSealWrapper');
+    const digitalSignatureControls = document.getElementById('digitalSignatureControls');
+    
+    if (digitalSealWrapper) {
+        if (currentMode === 'INVOICE') {
+            digitalSealWrapper.style.display = 'flex';
+            if (digitalSignatureControls) digitalSignatureControls.style.display = 'block';
+            
+            const sealStatusText = document.getElementById('sealStatusText').value || 'PAID';
+            const sealStyle = document.getElementById('sealStyle').value || 'teal';
+            const sealCustomNumber = document.getElementById('sealCustomNumber').value;
+            const sealTimestampText = document.getElementById('sealTimestampText').value;
+            
+            // Set status text
+            document.getElementById('prevSealStatusText').textContent = sealStatusText.toUpperCase();
+            
+            // Set Verification ID number
+            const finalSealNo = sealCustomNumber && sealCustomNumber.trim() !== '' ? sealCustomNumber : docNum;
+            document.getElementById('prevSealDocNum').textContent = finalSealNo;
+            
+            // Set Timestamp
+            document.getElementById('prevSealTimestamp').textContent = sealTimestampText || '---';
+            
+            // Update wrapper class list
+            digitalSealWrapper.className = 'digital-seal-wrapper style-' + sealStyle;
+        } else {
+            digitalSealWrapper.style.display = 'none';
+            if (digitalSignatureControls) digitalSignatureControls.style.display = 'none';
+        }
     }
 
     // Items Table

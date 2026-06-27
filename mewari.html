@@ -113,6 +113,34 @@
                             oninput="updatePreview()"></textarea>
                     </div>
                 </div>
+
+                <div class="card" id="digitalSignatureControls">
+                    <h3><i class="fa-solid fa-signature"></i> Digital Signature Seal</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Seal Text</label>
+                            <input type="text" id="sealStatusText" value="PAID" placeholder="e.g. PAID, RECEIVED" oninput="updatePreview()">
+                        </div>
+                        <div class="form-group">
+                            <label>Seal Color</label>
+                            <select id="sealStyle" oninput="updatePreview()" style="width: 100%; padding: 14px 16px; border: 1px solid var(--border); border-radius: 12px; font-size: 0.95rem; background: rgba(255, 255, 255, 0.6); color: var(--text-main);">
+                                <option value="teal">Branded Teal</option>
+                                <option value="green">Classic Green</option>
+                                <option value="blue">Modern Blue</option>
+                                <option value="charcoal">Charcoal Gray</option>
+                                <option value="red">Warning Red</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Verification ID / Number</label>
+                        <input type="text" id="sealCustomNumber" placeholder="Leave blank to use Invoice No." oninput="updatePreview()">
+                    </div>
+                    <div class="form-group">
+                        <label>Signature Timestamp</label>
+                        <input type="text" id="sealTimestampText" placeholder="e.g. May 24, 2026, 19:15 IST" oninput="updatePreview()">
+                    </div>
+                </div>
             </section>
 
             <!-- Right Side: Live Preview -->
@@ -197,8 +225,24 @@
                         </div>
 
                         <div class="invoice-footer">
-                            <p style="width: 100%; text-align: center;">Computer generated document. No signature
-                                required.</p>
+                            <div class="digital-seal-wrapper" id="digitalSealWrapper">
+                                <div class="adobe-sign-signature-box">
+                                    <div class="sig-left-group">
+                                        <div class="sig-logo-area">
+                                            <img src="chittortech_logo_1775884354186.png" alt="ChittorTech Logo" class="sig-logo">
+                                        </div>
+                                        <div class="sig-details-left">
+                                            <span class="sig-title">DIGITALLY VERIFIED DOCUMENT</span>
+                                            <span class="sig-status">STATUS: <strong class="status-highlight" id="prevSealStatusText">PAID</strong></span>
+                                            <span class="sig-org">Verified by ChittorTech Systems</span>
+                                        </div>
+                                    </div>
+                                    <div class="sig-details-right">
+                                        <span class="sig-id">Verification ID: <span class="monospaced" id="prevSealDocNum">---</span></span>
+                                        <span class="sig-timestamp">Timestamp: <span id="prevSealTimestamp">---</span></span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
