@@ -618,22 +618,25 @@ input:focus, textarea:focus {
     }
 
     .totals-section {
-        display: flex !important;
-        flex-direction: column;
-        page-break-inside: auto;
+        display: grid !important;
+        grid-template-columns: 1.2fr 1fr;
+        gap: 30px;
+        page-break-inside: avoid;
+        align-items: start;
+        margin-top: 20px;
     }
 
     .amount-area {
-        order: 1;
-        align-self: flex-end;
-        width: 50%;
-        margin-bottom: 2rem;
+        order: initial;
+        align-self: initial;
+        width: 100%;
+        margin-bottom: 0;
     }
 
     .notes-area {
-        order: 2;
+        order: initial;
         width: 100%;
-        padding-top: 1rem;
+        padding-top: 0;
         page-break-inside: avoid;
     }
 
