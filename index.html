@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chittortech Systems</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <header class="main-header no-print">
+            <div class="logo-area">
+                <img src="chittortech_logo_1775884354186.png" alt="ChittorTech Logo" class="header-logo">
+                <h1>Chittor<span>tech</span></h1>
+            </div>
+            <nav class="main-nav">
+                <a href="index.html" class="nav-link active">ChittorTech</a>
+                <a href="mewari.html" class="nav-link">Mewari Achar</a>
+                <a href="terms.html" class="nav-link">Terms & Conditions</a>
+            </nav>
+            <div class="header-actions">
+                <div class="toggle-container">
+                    <button id="invoiceToggle" class="toggle-btn active" onclick="setMode('INVOICE')">Invoice</button>
+                    <button id="quotationToggle" class="toggle-btn" onclick="setMode('QUOTATION')">Quotation</button>
+                </div>
+                <button class="primary-btn" onclick="window.print()">
+                    <i class="fa-solid fa-print"></i> Print Document
+                </button>
+                <button class="icon-btn" title="Reset to Defaults" onclick="resetDraft()" style="background: rgba(255, 255, 255, 0.1); color: var(--text-muted); border: 1px solid var(--glass-border);">
+                    <i class="fa-solid fa-rotate-left"></i>
+                </button>
+            </div>
+        </header>
+
+        <main class="editor-grid">
+            <!-- Left Side: Form Input -->
+            <section class="controls-panel no-print">
+                <div class="card">
+                    <h3><i class="fa-solid fa-circle-info"></i> Document Details</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Document Number</label>
+                            <div style="display: flex; align-items: center; background: rgba(255, 255, 255, 0.6); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; padding-left: 16px;">
+                                <span id="docPrefix" style="color: var(--text-muted); font-weight: 600; white-space: nowrap;">CT/2026/</span>
+                                <input type="text" id="docNumber" placeholder="001" oninput="updatePreview()" style="border: none; background: transparent; border-radius: 0; padding-left: 4px; padding-right: 16px; margin: 0; box-shadow: none; outline: none;">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Date</label>
+                            <input type="date" id="docDate" oninput="updatePreview()">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3><i class="fa-solid fa-user"></i> Client Information</h3>
+                    <div class="form-group">
+                        <label>Client Name</label>
+                        <input type="text" id="clientName" placeholder="Client Name / Business"
+                            oninput="updatePreview()">
+                    </div>
+                    <div class="form-group">
+                        <label>Client Address</label>
+                        <textarea id="clientAddress" placeholder="Client Address" oninput="updatePreview()"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Client Contact</label>
+                        <input type="text" id="clientContact" placeholder="Email or Phone" oninput="updatePreview()">
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-list"></i> Items & Services</h3>
+                        <button class="add-btn" onclick="addItem()"><i class="fa-solid fa-plus"></i> Add Item</button>
+                    </div>
+                    <div id="itemsContainer">
+                        <!-- Items will be injected here -->
+                    </div>
+                </div>
+
+
+
+
+
+                <div class="card">
+                    <h3><i class="fa-solid fa-building-columns"></i> Payment Information</h3>
+                    <div class="form-group">
+                        <label>Payment Mode</label>
+                        <select id="paymentMode" oninput="updatePreview()" style="width: 100%; padding: 14px 16px; border: 1px solid var(--border); border-radius: 12px; font-size: 0.95rem; background: rgba(255, 255, 255, 0.6); color: var(--text-main);">
+                            <option value="Bank Transfer">Bank Transfer</option>
+                            <option value="UPI / PhonePe / GPay">UPI / PhonePe / GPay</option>
+                            <option value="Cash">Cash</option>
+                            <option value="Check">Check</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Payment Details</label>
+                        <textarea id="paymentInfo" placeholder="Bank account or check details, UPI, etc."
+                            oninput="updatePreview()"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Amount Paid (₹)</label>
+                        <input type="number" id="amountPaid" placeholder="Leave blank if none" oninput="updatePreview()">
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3><i class="fa-solid fa-file-contract"></i> Terms & Conditions</h3>
+                    <div class="form-group">
+                        <textarea id="termsText" placeholder="Enter terms, conditions, or privacy policy..." rows="4" oninput="updatePreview()">1. Payment is due within 15 days.
+2. Advance payments are non-refundable.</textarea>
+                    </div>
+                </div>
+
+                <div class="card" id="digitalSignatureControls">
+                    <h3><i class="fa-solid fa-signature"></i> Digital Signature Seal</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Seal Text</label>
+                            <input type="text" id="sealStatusText" value="PAID" placeholder="e.g. PAID, RECEIVED" oninput="updatePreview()">
+                        </div>
+                        <div class="form-group">
+                            <label>Seal Color</label>
+                            <select id="sealStyle" oninput="updatePreview()" style="width: 100%; padding: 14px 16px; border: 1px solid var(--border); border-radius: 12px; font-size: 0.95rem; background: rgba(255, 255, 255, 0.6); color: var(--text-main);">
+                                <option value="teal">Branded Teal</option>
+                                <option value="green">Classic Green</option>
+                                <option value="blue">Modern Blue</option>
+                                <option value="charcoal">Charcoal Gray</option>
+                                <option value="red">Warning Red</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Verification ID / Number</label>
+                        <input type="text" id="sealCustomNumber" placeholder="Leave blank to use Invoice No." oninput="updatePreview()">
+                    </div>
+                    <div class="form-group">
+                        <label>Signature Timestamp</label>
+                        <input type="text" id="sealTimestampText" placeholder="e.g. May 24, 2026, 19:15 IST" oninput="updatePreview()">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Side: Live Preview -->
+            <section class="preview-panel">
+                <div id="print-area" class="a4-page">
+                    <div class="print-header">
+                        <img src="chittortech_logo_1775884354186.png" alt="ChittorTech Logo">
+                        <h1>Chittor<span>tech</span></h1>
+                    </div>
+                    <div class="invoice-box">
+                        <div class="invoice-header">
+                            <div class="company-info">
+                                <img src="chittortech_logo_1775884354186.png" alt="ChittorTech Logo" class="preview-logo">
+                                <h2 class="company-name">ChittorTech</h2>
+                                <p class="company-tagline">Excellence in Technology Solutions</p>
+                                <p class="company-tagline istart-badge"><i class="fa-solid fa-check-circle"></i> iStart Approved Startup</p>
+                                <div class="company-details">
+                                    <p><i class="fa-solid fa-location-dot"></i> Chittorgarh, Rajasthan – 312001</p>
+                                    <p><i class="fa-solid fa-envelope"></i> business@chittortech.online</p>
+                                    <p><i class="fa-solid fa-phone"></i> +91 7597451057 <i class="fa-brands fa-whatsapp" style="margin-left: 5px; color: #25D366;"></i></p>
+                                    <p><i class="fa-solid fa-globe"></i> chittortech.online</p>
+                                </div>
+                            </div>
+                            <div class="document-type">
+                                <h1 id="previewType">INVOICE</h1>
+                                <div class="meta-preview">
+                                    <p><strong>No:</strong> <span id="prevDocNumber" contenteditable="true"
+                                            onblur="syncInput('docNumber', this.innerText)">---</span></p>
+                                    <p><strong>Date:</strong> <span id="prevDocDate" contenteditable="true"
+                                            onblur="syncInput('docDate', this.innerText)">---</span></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="customer-section">
+                            <div class="bill-to-card">
+                                <p class="label">BILL TO:</p>
+                                <div class="bill-to-details">
+                                    <h3 id="prevClientName" contenteditable="true"
+                                        onblur="syncInput('clientName', this.innerText)">Client Name</h3>
+                                    <p id="prevClientAddress" class="address-text" contenteditable="true"
+                                        onblur="syncInput('clientAddress', this.innerText)">Client Address Details</p>
+                                    <p id="prevClientContact" contenteditable="true"
+                                        onblur="syncInput('clientContact', this.innerText)">Contact Info</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <table class="items-table">
+                            <thead>
+                                <tr>
+                                    <th>Description</th>
+                                    <th class="text-right">Qty</th>
+                                    <th class="text-right">Rate</th>
+                                    <th class="text-right">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody id="previewItems">
+                                <!-- Items injected by JS -->
+                            </tbody>
+                        </table>
+
+                        <div class="totals-section">
+                            <div class="notes-area">
+
+                                    
+                                <p class="label" style="margin-top: 30px;">
+                                    Payment Mode: <span id="prevPaymentMode" style="color: var(--text-main);">Bank Transfer</span>
+                                </p>
+                                <p id="prevPaymentInfo" class="notes-text" contenteditable="true"
+                                    onblur="syncInput('paymentInfo', this.innerText)" style="display: none;"></p>
+                            </div>
+                            <div class="amount-area">
+                                <div class="amount-row">
+                                    <span>Subtotal</span>
+                                    <span id="prevSubtotal">₹0.00</span>
+                                </div>
+                                <div class="amount-row">
+                                    <span>Total Amount</span>
+                                    <span id="prevGrandTotal">₹0.00</span>
+                                </div>
+                                <div class="amount-row text-success" id="amountPaidRow" style="display: none;">
+                                    <span>Amount Paid</span>
+                                    <span id="prevAmountPaid">₹0.00</span>
+                                </div>
+                                <div class="amount-row total balance-due" id="balanceDueRow">
+                                    <span>Balance Due</span>
+                                    <span id="prevBalanceDue">₹0.00</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="invoice-footer">
+                            <div class="digital-seal-wrapper" id="digitalSealWrapper">
+                                <div class="adobe-sign-signature-box">
+                                    <div class="sig-left-group">
+                                        <div class="sig-logo-area">
+                                            <img src="chittortech_logo_1775884354186.png" alt="ChittorTech Logo" class="sig-logo">
+                                        </div>
+                                        <div class="sig-details-left">
+                                            <span class="sig-title">DIGITALLY VERIFIED DOCUMENT</span>
+                                            <span class="sig-status">STATUS: <strong class="status-highlight" id="prevSealStatusText">PAID</strong></span>
+                                            <span class="sig-org">Verified by ChittorTech Systems</span>
+                                        </div>
+                                    </div>
+                                    <div class="sig-details-right">
+                                        <span class="sig-id">Verification ID: <span class="monospaced" id="prevSealDocNum">---</span></span>
+                                        <span class="sig-timestamp">Timestamp: <span id="prevSealTimestamp">---</span></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="terms-page-wrapper" id="termsPageWrapper" style="display: none; margin-top: 40px;">
+                        <div class="invoice-box terms-box" style="padding: 30px;">
+                            <div class="terms-preview-box" id="termsPreviewBox" style="border-left: none; padding: 0; background: transparent;">
+                                <h3 class="label" style="font-size: 1.2rem; margin-bottom: 15px; color: var(--primary-dark); border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">Terms & Conditions</h3>
+                                <p id="prevTermsText" class="terms-text" contenteditable="true" onblur="syncInput('termsText', this.innerText)" style="font-size: 1rem;"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+        </main>
+        <footer class="app-footer no-print">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <div class="brand-badge">
+                        <img src="chittortech_logo_1775884354186.png" alt="ChittorTech Logo">
+                        <div class="brand-text">
+                            <p>A PRODUCT OF</p>
+                            <h3>ChittorTech</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer-info">
+                    <div class="info-line"><i class="fa-solid fa-circle"></i> Recognized by iStart Rajasthan</div>
+                    <div class="info-line"><i class="fa-solid fa-circle"></i> Registered MSME | Startup India</div>
+                    <div class="info-line" style="color: rgba(255,255,255,0.5); font-size: 0.8rem; margin-top: -5px;">Startup Id: 05F896CE</div>
+                </div>
+                <div class="footer-divider"></div>
+                <div class="footer-contact">
+                    <a href="https://chittortech.online" target="_blank" rel="dofollow">
+                        <i class="fa-solid fa-globe"></i>
+                        chittortech.online
+                    </a>
+                </div>
+                <div class="footer-copyright">
+                    <p>© 2026 CHITTORTECH</p>
+                    <p>ALL RIGHTS RESERVED</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
