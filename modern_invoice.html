@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chittortech Systems - Modern Invoice</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Exact Styles matching the provided image */
+        :root {
+            --inv-navy: #0B2545;
+            --inv-light-bg: #F0F4F8;
+            --inv-teal: #51B8AD;
+            --inv-row-alt: #EAEAEA;
+            --inv-text-dark: #222222;
+        }
+
+        /* Essential for Printing backgrounds */
+        @media print {
+            body {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .preview-panel {
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            .editor-grid {
+                display: block !important;
+            }
+        }
+
+        .modern-invoice-wrap {
+            font-family: 'Inter', sans-serif;
+            background: #fff;
+            color: var(--inv-text-dark);
+            padding: 40px;
+            box-sizing: border-box;
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto;
+            position: relative;
+            /* Force background colors to show in print */
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+
+        .inv-main-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--inv-navy);
+            margin: 0 0 15px 0;
+            text-transform: capitalize;
+        }
+
+        .inv-header-banner {
+            display: flex;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .inv-header-left {
+            background-color: var(--inv-navy);
+            color: #fff;
+            padding: 15px 25px;
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .inv-header-left p {
+            margin: 5px 0;
+            font-size: 15px;
+        }
+
+        .inv-header-right {
+            background-color: var(--inv-light-bg);
+            padding: 15px 25px;
+            width: 50%;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .inv-header-right img {
+            height: 50px;
+            width: auto;
+        }
+
+        .inv-header-right h2 {
+            margin: 0;
+            font-size: 22px;
+            color: var(--inv-navy);
+            font-weight: 700;
+        }
+
+        .inv-divider {
+            border: 0;
+            border-bottom: 2px dotted var(--inv-teal);
+            margin: 20px 0 25px 0;
+        }
+
+        .inv-info-section {
+            display: flex;
+            margin-bottom: 30px;
+            gap: 40px;
+        }
+
+        .inv-info-col {
+            flex: 1;
+        }
+
+        .inv-info-col h3 {
+            color: var(--inv-navy);
+            font-size: 16px;
+            font-weight: 700;
+            margin: 0 0 12px 0;
+        }
+
+        .inv-info-col p {
+            margin: 6px 0;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .inv-table-section h3 {
+            color: var(--inv-navy);
+            font-size: 16px;
+            font-weight: 700;
+            margin: 0 0 12px 0;
+        }
+
+        .inv-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 0; /* Attach directly to totals */
+        }
+
+        .inv-table th {
+            background-color: var(--inv-teal) !important;
+            color: #fff !important;
+            font-weight: 700;
+            padding: 10px 15px;
+            font-size: 14px;
+        }
+
+        .inv-table th.text-left { text-align: left; }
+        .inv-table th.text-center { text-align: center; }
+        .inv-table th.text-right { text-align: right; }
+
+        .inv-table td {
+            padding: 10px 15px;
+            font-size: 14px;
+        }
+        .inv-table td.text-center { text-align: center; }
+        .inv-table td.text-right { text-align: right; }
+        
+        .inv-table tbody tr:nth-child(even) {
+            background-color: var(--inv-row-alt) !important;
+        }
+
+        .inv-totals-banner {
+            background-color: var(--inv-navy) !important;
+            color: #fff !important;
+            padding: 15px 25px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 35px;
+        }
+
+        .inv-totals-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .inv-totals-item span:last-child {
+            font-size: 16px;
+        }
+
+        .inv-bottom-grid {
+            display: flex;
+            gap: 40px;
+            margin-bottom: 50px;
+        }
+        
+        .inv-bottom-grid .inv-info-col {
+            flex: 1;
+        }
+        
+        .inv-bottom-grid ul {
+            padding-left: 20px;
+            margin: 0;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .inv-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: auto;
+        }
+
+        .inv-contact-pill {
+            background-color: var(--inv-navy) !important;
+            color: #fff !important;
+            padding: 12px 25px;
+            border-radius: 50px;
+            display: flex;
+            gap: 20px;
+            font-size: 13px;
+            align-items: center;
+        }
+        
+        .inv-contact-pill i {
+            margin-right: 6px;
+        }
+
+        .inv-signature {
+            text-align: right;
+            min-width: 200px;
+        }
+        
+        .inv-signature p.date-text {
+            font-weight: 600;
+            margin-bottom: 40px;
+        }
+        
+        .inv-sig-line {
+            border-top: 1px solid var(--inv-text-dark);
+            padding-top: 10px;
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+        /* Override print styles specifically for this area */
+        #print-area {
+            padding: 0 !important;
+            background: transparent !important;
+            box-shadow: none !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <header class="main-header no-print">
+            <div class="logo-area">
+                <img src="chittortech_logo_1775884354186.png" alt="ChittorTech Logo" class="header-logo">
+                <h1>Chittor<span>tech</span></h1>
+            </div>
+            <nav class="main-nav">
+                <a href="index.html" class="nav-link">ChittorTech</a>
+                <a href="mewari.html" class="nav-link">Mewari Achar</a>
+                <a href="modern_invoice.html" class="nav-link active">Modern Invoice</a>
+                <a href="terms.html" class="nav-link">Terms & Conditions</a>
+            </nav>
+            <div class="header-actions">
+                <button class="primary-btn" onclick="window.print()">
+                    <i class="fa-solid fa-print"></i> Print Document
+                </button>
+            </div>
+        </header>
+
+        <main class="editor-grid">
+            <!-- Left Side: Form Input -->
+            <section class="controls-panel no-print">
+                <div class="card">
+                    <h3><i class="fa-solid fa-circle-info"></i> Document Details</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Document Number</label>
+                            <input type="text" id="docNumber" value="SI2023-001" oninput="updatePreview()">
+                        </div>
+                        <div class="form-group">
+                            <label>Date</label>
+                            <input type="date" id="docDate" oninput="updatePreview()">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3><i class="fa-solid fa-user"></i> Client Information (Bill To)</h3>
+                    <div class="form-group">
+                        <label>Customer Name</label>
+                        <input type="text" id="clientName" value="John Smith" oninput="updatePreview()">
+                    </div>
+                    <div class="form-group">
+                        <label>Billing Address</label>
+                        <textarea id="clientAddress" oninput="updatePreview()">123 Elm Street Green Valley</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Email & Phone</label>
+                        <input type="text" id="clientContact" value="(555) 555-5555 | john.smith@email.com" oninput="updatePreview()">
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-list"></i> Service Details</h3>
+                        <button class="add-btn" onclick="addItem()"><i class="fa-solid fa-plus"></i> Add Item</button>
+                    </div>
+                    <div id="itemsContainer">
+                        <!-- Items will be injected here -->
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3><i class="fa-solid fa-building-columns"></i> Payment Details & Terms</h3>
+                    <div class="form-group">
+                        <label>Payment Method & Info</label>
+                        <textarea id="paymentInfo" oninput="updatePreview()">Payment Method: Bank Transfer
+Account: 1234-5678-9012-3456</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Terms and Conditions</label>
+                        <textarea id="termsText" oninput="updatePreview()">Payment is due upon receipt of this invoice.
+Late payments may incur additional charges.
+Please make checks payable to ChittorTech.</textarea>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Side: Live Preview -->
+            <section class="preview-panel">
+                <div id="print-area">
+                    <div class="modern-invoice-wrap shadow-card">
+                        
+                        <h1 class="inv-main-title">Invoice Service</h1>
+
+                        <!-- Top Banner -->
+                        <div class="inv-header-banner">
+                            <div class="inv-header-left">
+                                <p><strong>Invoice Number:</strong> <span id="prevDocNumber">SI2023-001</span></p>
+                                <p><strong>Invoice Date:</strong> <span id="prevDocDate">---</span></p>
+                            </div>
+                            <div class="inv-header-right">
+                                <img src="chittortech_logo_1775884354186.png" alt="ChittorTech Logo">
+                                <h2>ChittorTech</h2>
+                            </div>
+                        </div>
+
+                        <hr class="inv-divider">
+
+                        <!-- Billing Information -->
+                        <div class="inv-info-section">
+                            <div class="inv-info-col">
+                                <h3>Billing Information:</h3>
+                                <p><strong>Company Name:</strong> ChittorTech</p>
+                                <p><strong>Company Address:</strong> Chittorgarh, Rajasthan – 312001</p>
+                                <p><strong>Phone Number:</strong> +91 7597451057</p>
+                                <p><strong>Email:</strong> business@chittortech.in</p>
+                            </div>
+                            <div class="inv-info-col">
+                                <h3>Bill To:</h3>
+                                <p><strong>Customer Name:</strong> <span id="prevClientName">John Smith</span></p>
+                                <p><strong>Billing Address:</strong> <span id="prevClientAddress">123 Elm Street Green Valley</span></p>
+                                <p><strong>Contact:</strong> <span id="prevClientContact">(555) 555-5555 | john.smith@email.com</span></p>
+                            </div>
+                        </div>
+
+                        <!-- Service Table -->
+                        <div class="inv-table-section">
+                            <h3>Service Details:</h3>
+                            <table class="inv-table">
+                                <thead>
+                                    <tr>
+                                        <th class="text-left">No</th>
+                                        <th class="text-left">Item Description</th>
+                                        <th class="text-center">Hours/Units</th>
+                                        <th class="text-right">Rate/Unit (₹)</th>
+                                        <th class="text-right">Total (₹)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="customPreviewItems">
+                                    <!-- Items injected dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Totals Banner -->
+                        <div class="inv-totals-banner">
+                            <div class="inv-totals-item">
+                                <span>Subtotal:</span>
+                                <span id="prevSubtotal">₹0.00</span>
+                            </div>
+                            <!-- In original it has Sales Tax, we map Amount Paid or Tax here -->
+                            <div class="inv-totals-item">
+                                <span>Total Amount Due:</span>
+                                <span id="prevGrandTotal">₹0.00</span>
+                            </div>
+                        </div>
+
+                        <!-- Bottom Grid -->
+                        <div class="inv-bottom-grid">
+                            <div class="inv-info-col">
+                                <h3>Payment Details:</h3>
+                                <p id="prevPaymentInfo" style="white-space: pre-wrap; font-size: 14px; margin-top: 0;"></p>
+                            </div>
+                            <div class="inv-info-col">
+                                <h3>Terms and Conditions:</h3>
+                                <ul id="prevTermsList">
+                                    <li>Payment is due upon receipt of this invoice.</li>
+                                    <li>Late payments may incur additional charges.</li>
+                                    <li>Please make checks payable to ChittorTech.</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Footer / Signature -->
+                        <div class="inv-footer">
+                            <div class="inv-contact-pill">
+                                <span><i class="fa-solid fa-phone"></i> +91 7597451057</span>
+                                <span><i class="fa-solid fa-envelope"></i> contact@chittortech.in</span>
+                            </div>
+                            <div class="inv-signature">
+                                <p class="date-text">Date : <span id="prevSealTimestamp">---</span></p>
+                                <div class="inv-sig-line">ChittorTech</div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Override update preview logic specifically for this template
+        const originalUpdatePreview = updatePreview;
+        
+        // Custom renderer for items matching the image (No, Description, Qty, Rate, Total)
+        function renderCustomItems() {
+            const tbody = document.getElementById('customPreviewItems');
+            if(!tbody) return;
+            tbody.innerHTML = '';
+            
+            items.forEach((item, index) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="text-left" style="font-weight:700;">${index + 1}</td>
+                    <td class="text-left">${item.desc}</td>
+                    <td class="text-center">${item.qty}</td>
+                    <td class="text-right">₹${item.rate.toFixed(2)}</td>
+                    <td class="text-right">₹${(item.qty * item.rate).toFixed(2)}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        updatePreview = function() {
+            originalUpdatePreview();
+            
+            // Format terms into list items
+            const termsText = document.getElementById('termsText').value;
+            const termsList = document.getElementById('prevTermsList');
+            if(termsList) {
+                termsList.innerHTML = termsText.split('\n').filter(t => t.trim() !== '').map(t => {
+                    // strip bullet points if they typed them
+                    const clean = t.replace(/^[-\d.*]+\s*/, '');
+                    return `<li>${clean}</li>`;
+                }).join('');
+            }
+            
+            // Date formatting
+            const dateStr = document.getElementById('docDate').value;
+            let dateText = "---";
+            if(dateStr) {
+                const dateObj = new Date(dateStr);
+                const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                dateText = dateObj.toLocaleDateString('en-US', options);
+            }
+            if(document.getElementById('prevSealTimestamp')) {
+                document.getElementById('prevSealTimestamp').innerText = dateText;
+            }
+            
+            // Re-render items in custom table format
+            renderCustomItems();
+        };
+
+        // Initialize default items to demonstrate layout
+        setTimeout(() => {
+            if(items.length === 0) {
+                items = [
+                    { id: 1, desc: "Premium Web Design", qty: 1, rate: 25000 },
+                    { id: 2, desc: "Hosting setup", qty: 1, rate: 5000 }
+                ];
+                renderItems();
+            }
+            if(document.getElementById('docDate') && !document.getElementById('docDate').value) {
+                document.getElementById('docDate').valueAsDate = new Date();
+                updatePreview();
+            }
+        }, 300);
+    </script>
+</body>
+</html>
