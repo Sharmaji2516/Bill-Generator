@@ -1,0 +1,458 @@
+:root {
+    --primary: #6366f1;
+    --primary-light: #818cf8;
+    --primary-dark: #4f46e5;
+    --secondary: #10b981;
+    --accent: #f59e0b;
+    --bg-app: #f1f5f9;
+    --bg-card: rgba(255, 255, 255, 0.9);
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --border: #e2e8f0;
+    --glass-bg: rgba(255, 255, 255, 0.8);
+    --glass-border: rgba(255, 255, 255, 0.5);
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --premium-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Outfit', sans-serif;
+}
+
+body {
+    background-color: var(--bg-app);
+    color: var(--text-main);
+    overflow-x: hidden;
+    background-image: 
+        radial-gradient(at 0% 0%, hsla(253,16%,15%,1) 0, transparent 50%), 
+        radial-gradient(at 100% 0%, hsla(225,39%,20%,1) 0, transparent 50%);
+    background-attachment: fixed;
+    min-height: 100vh;
+}
+
+/* Header Styles */
+.main-header {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding: 1rem 2.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--glass-border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--shadow-sm);
+}
+
+.logo-area {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.header-logo {
+    height: 40px;
+    width: auto;
+    border-radius: 8px; /* Optional, just in case the logo needs a slight curve */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.logo-area h1 {
+    font-size: 1.6rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: #1e293b;
+}
+
+.logo-area h1 span {
+    color: var(--primary);
+}
+
+.header-actions {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+/* Toggle Switch */
+.toggle-container {
+    background: #e2e8f0;
+    padding: 5px;
+    border-radius: 14px;
+    display: flex;
+    gap: 5px;
+}
+
+.toggle-btn {
+    border: none;
+    padding: 8px 22px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    background: transparent;
+    color: var(--text-muted);
+}
+
+.toggle-btn.active {
+    background: white;
+    color: var(--primary);
+    box-shadow: var(--shadow-md);
+}
+
+.primary-btn {
+    background: var(--premium-gradient);
+    color: white;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+}
+
+.primary-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+}
+
+/* App Layout */
+.editor-grid {
+    display: grid;
+    grid-template-columns: 460px 1fr;
+    height: calc(100vh - 81px);
+}
+
+.controls-panel {
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-right: 1px solid var(--border);
+    padding: 2rem;
+    overflow-y: auto;
+}
+
+.preview-panel {
+    padding: 3rem;
+    overflow-y: auto;
+    display: flex;
+    justify-content: center;
+}
+
+/* Cards & Forms */
+.card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow-md);
+}
+
+.card h3 {
+    font-size: 1rem;
+    margin-bottom: 1.2rem;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+}
+
+input, textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    outline: none;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+    background: #f8fafc;
+}
+
+input:focus, textarea:focus {
+    border-color: var(--primary);
+    background: white;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+/* Item Inputs */
+.item-row {
+    display: grid;
+    grid-template-columns: 2fr 0.6fr 1fr 40px;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.icon-btn {
+    background: #f1f5f9;
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    cursor: pointer;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-btn:hover {
+    background: #fee2e2;
+    color: #ef4444;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.add-btn {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
+/* A4 Preview Styles */
+.a4-page {
+    background: white;
+    width: 210mm;
+    min-height: 297mm;
+    padding: 20mm;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    transform-origin: top center;
+}
+
+.invoice-box {
+    color: #334155;
+}
+
+.invoice-header {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 4px solid var(--primary);
+    padding-bottom: 2rem;
+    margin-bottom: 3rem;
+}
+
+.company-name {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1;
+}
+
+.preview-logo {
+    height: 60px;
+    margin-bottom: 10px;
+}
+
+.company-tagline {
+    font-size: 0.95rem;
+    color: var(--primary);
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.company-details p {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+}
+
+.document-type h1 {
+    font-size: 3.5rem;
+    color: #f1f5f9;
+    text-align: right;
+    font-weight: 900;
+}
+
+.meta-preview {
+    text-align: right;
+}
+
+.meta-preview p {
+    font-size: 1.1rem;
+    margin-bottom: 6px;
+}
+
+.customer-section {
+    margin-bottom: 4rem;
+}
+
+.bill-to-card {
+    display: flex;
+    gap: 25px;
+    align-items: flex-start;
+}
+
+.bill-to-details {
+    display: flex;
+    flex-direction: column;
+    gap: 6px; /* A small gap between name, address, and contact */
+}
+
+.bill-to-details h3 {
+    margin: 0;
+    font-size: 1.15rem;
+}
+
+.bill-to-details p {
+    margin: 0;
+}
+
+.bill-to-card .label {
+    margin-bottom: 0;
+    white-space: nowrap;
+    margin-top: 3px; /* Align label better with the name text */
+}
+
+.label {
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+
+.address-text {
+    white-space: pre-line;
+    color: #475569;
+    font-size: 1.05rem;
+    line-height: 1.5;
+}
+
+/* Table Styles */
+.items-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 4rem;
+}
+
+.items-table th {
+    background: #f8fafc;
+    text-align: left;
+    padding: 15px;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    border-bottom: 2px solid var(--primary);
+}
+
+.items-table td {
+    padding: 15px;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 1.05rem;
+}
+
+.text-right { text-align: right; }
+
+/* Totals */
+.totals-section {
+    display: grid;
+    grid-template-columns: 1fr 1.1fr;
+    gap: 30px;
+}
+
+.amount-area {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.amount-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.1rem;
+}
+
+.amount-row.total {
+    border-top: 2px solid var(--primary);
+    padding-top: 15px;
+    font-weight: 800;
+    font-size: 1.5rem;
+    color: var(--primary);
+    white-space: nowrap;
+}
+
+.invoice-footer {
+    margin-top: 6rem;
+    padding-top: 2rem;
+    border-top: 1px solid #f1f5f9;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.branding span {
+    color: var(--primary);
+    font-weight: 600;
+}
+
+/* Print Specifics */
+@media print {
+    @page { 
+        margin: 0; /* Removes default headers/footers */
+    }
+
+    .no-print {
+        display: none !important;
+    }
+    
+    body {
+        background: white;
+    }
+    
+    .editor-grid {
+        display: block;
+        height: auto;
+    }
+    
+    .preview-panel {
+        background: white;
+        padding: 0;
+        overflow: visible;
+    }
+    
+    .a4-page {
+        box-shadow: none;
+        width: 100%;
+        margin: 0;
+    }
+}
