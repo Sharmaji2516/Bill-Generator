@@ -1,0 +1,1265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChittorTech – GST Tax Invoice Generator</title>
+    <meta name="description" content="Professional GST Tax Invoice generator by ChittorTech, Chittorgarh.">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* Force color backgrounds in print */
+        * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
+        :root {
+            --gst-navy: #0B2545;
+            --gst-teal: #1e709e;
+            --gst-light-teal: #e8f3f8;
+            --gst-text: #1d2129;
+            --gst-muted: #555e6d;
+            --gst-bdr: #cdd6df;
+            --gst-header-bg: #0B2545;
+            --gst-row-alt: #f8fafc;
+        }
+
+        /* ─── A4 Invoice Preview Container ─────────────────────────────────── */
+        #invoice-preview {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #ffffff;
+            color: var(--gst-text);
+            width: 210mm;
+            min-height: 297mm;
+            height: auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-sizing: border-box;
+            padding: 24px 28px 20px 28px;
+            font-size: 12.5px;
+            line-height: 1.5;
+            position: relative;
+            margin: 0 auto;
+            border: 3px solid #0B2545;
+            border-radius: 0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .gst-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+        }
+
+        /* ─── Dynamic Auto-Fit Modes (Adjusts based on item count) ───────── */
+        #invoice-preview.compact-mode .gst-top-header { padding-bottom: 8px; margin-bottom: 6px; }
+        #invoice-preview.compact-mode .gst-logo-img { height: 65px; }
+        #invoice-preview.compact-mode .gst-brand-text h1 { font-size: 26px; }
+        #invoice-preview.compact-mode .gst-center-header { padding: 6px 0; margin-bottom: 6px; }
+        #invoice-preview.compact-mode .gst-main-title { font-size: 19px; }
+        #invoice-preview.compact-mode .gst-meta-grid { margin-bottom: 6px; }
+        #invoice-preview.compact-mode .gst-meta-cell { padding: 6px 10px; }
+        #invoice-preview.compact-mode .gst-parties-row { margin-bottom: 6px; gap: 8px; }
+        #invoice-preview.compact-mode .gst-info-box { padding: 8px 12px; }
+        #invoice-preview.compact-mode .gst-service-strip { padding: 6px 12px; margin-bottom: 6px; }
+        #invoice-preview.compact-mode .gst-table thead th { padding: 7px 10px; font-size: 10.5px; }
+        #invoice-preview.compact-mode .gst-table tbody td { padding: 7px 10px; font-size: 11.5px; }
+        #invoice-preview.compact-mode .gst-totals-wrap { margin-bottom: 6px; }
+        #invoice-preview.compact-mode .gst-bottom-grid { min-height: 105px; margin-bottom: 6px; }
+        #invoice-preview.compact-mode .gst-bank-box { min-height: 105px; padding: 8px 12px; }
+        #invoice-preview.compact-mode .gst-auth-box { min-height: 105px; padding: 8px 12px; }
+
+        #invoice-preview.dense-mode .gst-top-header { padding-bottom: 6px; margin-bottom: 4px; }
+        #invoice-preview.dense-mode .gst-logo-img { height: 55px; }
+        #invoice-preview.dense-mode .gst-brand-text h1 { font-size: 24px; }
+        #invoice-preview.dense-mode .gst-center-header { padding: 4px 0; margin-bottom: 4px; }
+        #invoice-preview.dense-mode .gst-main-title { font-size: 18px; }
+        #invoice-preview.dense-mode .gst-meta-grid { margin-bottom: 4px; }
+        #invoice-preview.dense-mode .gst-meta-cell { padding: 4px 8px; }
+        #invoice-preview.dense-mode .gst-parties-row { margin-bottom: 4px; }
+        #invoice-preview.dense-mode .gst-info-box { padding: 6px 10px; }
+        #invoice-preview.dense-mode .gst-service-strip { padding: 5px 10px; margin-bottom: 4px; }
+        #invoice-preview.dense-mode .gst-table thead th { padding: 6px 8px; font-size: 10px; }
+        #invoice-preview.dense-mode .gst-table tbody td { padding: 6px 8px; font-size: 11px; }
+        #invoice-preview.dense-mode .gst-totals-wrap { margin-bottom: 4px; }
+        #invoice-preview.dense-mode .gst-bottom-grid { min-height: 90px; margin-bottom: 4px; }
+        #invoice-preview.dense-mode .gst-bank-box { min-height: 90px; padding: 6px 10px; }
+        #invoice-preview.dense-mode .gst-auth-box { min-height: 90px; padding: 6px 10px; }
+
+        /* ─── 1. Header (Logo + Brand Centered & Spread) ─────────────────── */
+        .gst-top-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #0B2545;
+            margin-bottom: 8px;
+        }
+
+        .gst-brand-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            gap: 4px;
+            width: 100%;
+        }
+
+        .gst-logo-img {
+            height: 78px;
+            width: auto;
+            object-fit: contain;
+            margin-bottom: 4px;
+            filter: contrast(1.05);
+        }
+
+        .gst-brand-text {
+            text-align: center;
+            width: 100%;
+        }
+
+        .gst-brand-text h1 {
+            font-size: 30px;
+            font-weight: 900;
+            color: var(--gst-navy);
+            letter-spacing: 2px;
+            margin: 0 0 3px 0;
+            text-transform: uppercase;
+        }
+
+        .gst-brand-tagline {
+            font-size: 10.5px;
+            font-weight: 700;
+            letter-spacing: 2.8px;
+            color: #3b506d;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+
+        .gst-brand-address {
+            font-size: 12.5px;
+            color: var(--gst-muted);
+            margin: 0 0 4px 0;
+        }
+
+        .gst-brand-taxids {
+            font-size: 12px;
+            font-weight: 700;
+            color: #1e293b;
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            padding: 4px 16px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-top: 2px;
+        }
+
+        /* ─── Center Title & Invoice Number Section ─── */
+        .gst-center-header {
+            text-align: center;
+            padding: 8px 0 8px 0;
+            margin-bottom: 8px;
+            border-bottom: 2px solid var(--gst-navy);
+        }
+
+        .gst-main-title {
+            font-size: 22px;
+            font-weight: 900;
+            color: var(--gst-navy);
+            letter-spacing: 2px;
+            margin: 0 0 3px 0;
+            text-transform: uppercase;
+        }
+
+        .gst-badge {
+            display: inline-block;
+            font-size: 9.5px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            padding: 2px 12px;
+            border-radius: 4px;
+            background: #eef2f6;
+            color: #334155;
+            border: 1px solid #cbd5e1;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .gst-center-inv-no {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--gst-navy);
+            letter-spacing: 0.6px;
+        }
+
+        /* ─── 2. Metadata Bar (3 columns bordered box) ─────────────────────── */
+        .gst-meta-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr 1.2fr;
+            border: 1.5px solid var(--gst-bdr);
+            background: #fcfdfe;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .gst-meta-cell {
+            padding: 8px 14px;
+            border-right: 1px solid var(--gst-bdr);
+        }
+
+        .gst-meta-cell:last-child {
+            border-right: none;
+        }
+
+        .gst-meta-label {
+            font-size: 10.5px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #626f86;
+            margin-bottom: 2px;
+            letter-spacing: 0.3px;
+        }
+
+        .gst-meta-value {
+            font-size: 12.5px;
+            font-weight: 700;
+            color: var(--gst-navy);
+            word-break: break-word;
+        }
+
+        /* ─── 3. Two-Column Parties Box (Bill From & Bill To) ─────────────── */
+        .gst-parties-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .gst-info-box {
+            border: 1.5px solid var(--gst-bdr);
+            border-radius: 4px;
+            padding: 10px 14px;
+            background: #ffffff;
+        }
+
+        .gst-box-title {
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: var(--gst-navy);
+            border-bottom: 1.5px dashed var(--gst-bdr);
+            padding-bottom: 4px;
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        .gst-party-name {
+            font-size: 13px;
+            font-weight: 700;
+            color: #172b4d;
+            margin-bottom: 3px;
+        }
+
+        .gst-party-detail {
+            font-size: 12px;
+            color: var(--gst-muted);
+            margin: 2px 0;
+            line-height: 1.45;
+        }
+
+        .gst-party-detail strong {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        /* ─── 4. Service / Tax Details Strip ──────────────────────────────── */
+        .gst-service-strip {
+            border: 1.5px solid var(--gst-bdr);
+            border-radius: 4px;
+            padding: 8px 14px;
+            background: #ffffff;
+            margin-bottom: 8px;
+        }
+
+        /* ─── 5. Items Table ──────────────────────────────────────────────── */
+        .gst-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 0;
+            border: 1.5px solid var(--gst-bdr);
+        }
+
+        .gst-table thead th {
+            background-color: var(--gst-header-bg) !important;
+            color: #ffffff !important;
+            padding: 9px 12px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-right: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .gst-table thead th:last-child {
+            border-right: none;
+        }
+
+        .gst-table tbody td {
+            padding: 11px 12px;
+            font-size: 12.5px;
+            border-bottom: 1px solid var(--gst-bdr);
+            border-right: 1px solid var(--gst-bdr);
+            color: #172b4d;
+        }
+
+        .gst-table tbody td:last-child {
+            border-right: none;
+        }
+
+        .gst-table tbody tr:nth-child(even) {
+            background-color: var(--gst-row-alt) !important;
+        }
+
+        .gst-col-num { width: 38px; text-align: center; }
+        .gst-col-desc { text-align: left; }
+        .gst-col-sac { width: 90px; text-align: center; }
+        .gst-col-qty { width: 65px; text-align: center; }
+        .gst-col-rate { width: 110px; text-align: right; }
+        .gst-col-amt { width: 115px; text-align: right; font-weight: 600; }
+
+        /* ─── 6. Totals Section ───────────────────────────────────────────── */
+        .gst-totals-wrap {
+            display: flex;
+            border-left: 1.5px solid var(--gst-bdr);
+            border-right: 1.5px solid var(--gst-bdr);
+            border-bottom: 1.5px solid var(--gst-bdr);
+            background: #ffffff;
+            margin-bottom: 8px;
+        }
+
+        .gst-words-col {
+            flex: 1;
+            padding: 10px 14px;
+            border-right: 1px solid var(--gst-bdr);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            background: #fbfcfe;
+        }
+
+        .gst-words-label {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #626f86;
+            margin-bottom: 3px;
+        }
+
+        .gst-words-val {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--gst-navy);
+            line-height: 1.4;
+            font-style: italic;
+        }
+
+        .gst-totals-table-col {
+            width: 320px;
+        }
+
+        .gst-total-line {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 14px;
+            font-size: 11.5px;
+            border-bottom: 1px solid #eef2f6;
+            color: #2c3e50;
+        }
+
+        .gst-total-line span:last-child {
+            font-weight: 600;
+        }
+
+        .gst-grand-total {
+            background: #e8eff7 !important;
+            border-top: 1.5px solid var(--gst-navy);
+            border-bottom: none;
+            padding: 8px 14px;
+            font-size: 13.5px;
+            font-weight: 800;
+            color: var(--gst-navy);
+        }
+
+        .gst-grand-total span:last-child {
+            font-size: 14px;
+            font-weight: 800;
+        }
+
+        /* ─── 7. Bottom Grid (Bank + Authorization: BIGGER BOXES) ─────────── */
+        .gst-bottom-grid {
+            display: grid;
+            grid-template-columns: 1.25fr 1fr;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .gst-bank-box {
+            border: 1.5px solid var(--gst-bdr);
+            border-radius: 4px;
+            padding: 12px 16px;
+            background: #ffffff;
+            min-height: 145px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        .gst-bank-box .gst-box-title {
+            font-size: 11.5px;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: var(--gst-navy);
+            border-bottom: 1.5px dashed var(--gst-bdr);
+            padding-bottom: 4px;
+            margin-bottom: 8px;
+            letter-spacing: 0.6px;
+        }
+
+        .gst-bank-box .gst-party-detail {
+            font-size: 12.5px;
+            color: var(--gst-muted);
+            margin: 3px 0;
+            line-height: 1.5;
+        }
+
+        .gst-auth-box {
+            border: 1.5px solid var(--gst-bdr);
+            border-radius: 4px;
+            padding: 10px 14px;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            min-height: 120px;
+        }
+
+        .gst-auth-label {
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--gst-navy);
+            letter-spacing: 0.5px;
+            text-transform: capitalize;
+        }
+
+        /* ─── 8. Legal Disclaimer Note ────────────────────────────────────── */
+        .gst-footer-note {
+            font-size: 9.5px;
+            line-height: 1.4;
+            color: #6b778c;
+            border-top: 1px solid #e1e6ed;
+            padding-top: 6px;
+            text-align: justify;
+        }
+
+        /* ─── Print Optimizations ─────────────────────────────────────────── */
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 0;
+            }
+            body {
+                margin: 0 !important;
+                padding: 0 !important;
+                background: #ffffff !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .editor-grid {
+                display: block !important;
+                height: auto !important;
+            }
+            .preview-panel {
+                background: #ffffff !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                display: block !important;
+                width: 100% !important;
+            }
+            #print-area {
+                padding: 0 !important;
+                margin: 0 !important;
+                box-shadow: none !important;
+                width: 100% !important;
+            }
+            #invoice-preview {
+                width: 100% !important;
+                min-height: 297mm !important;
+                height: auto !important;
+                box-shadow: none !important;
+                padding: 14mm 14mm 10mm 14mm !important;
+                border: 3px solid #0B2545 !important;
+                box-sizing: border-box !important;
+                overflow: visible !important;
+            }
+            tr {
+                page-break-inside: avoid !important;
+            }
+            .gst-top-header, .gst-center-header, .gst-meta-grid, .gst-parties-row, .gst-service-strip,
+            .gst-totals-wrap, .gst-bottom-grid, .gst-footer-note {
+                page-break-inside: avoid !important;
+            }
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+
+<body>
+    <div class="app-container">
+
+        <!-- ===== APP HEADER ===== -->
+        <header class="main-header no-print">
+            <div class="logo-area">
+                <img src="chittortech_logo_1775884354186.png" alt="ChittorTech Logo" class="header-logo">
+                <h1>Chittor<span>tech</span></h1>
+            </div>
+            <nav class="main-nav">
+                <a href="index.html" class="nav-link">ChittorTech</a>
+                <a href="gst_invoice.html" class="nav-link active">ChittorTech (GST Invoice)</a>
+            </nav>
+            <div class="header-actions">
+                <button class="primary-btn" id="downloadPdfBtn" onclick="downloadPDF()">
+                    <i class="fa-solid fa-print"></i> Print / PDF
+                </button>
+                <button class="icon-btn" title="Reset to Defaults" onclick="resetDraft()"
+                    style="background:rgba(255,255,255,0.1);color:var(--text-muted);border:1px solid var(--glass-border);">
+                    <i class="fa-solid fa-rotate-left"></i>
+                </button>
+            </div>
+        </header>
+
+        <main class="editor-grid">
+
+            <!-- ===== LEFT: FORM CONTROLS ===== -->
+            <section class="controls-panel no-print">
+
+                <!-- Document Details -->
+                <div class="card">
+                    <h3><i class="fa-solid fa-file-invoice"></i> Document Details</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Invoice Number</label>
+                            <input type="text" id="invNumber" value="CT/2026-27/001" oninput="updatePreview()">
+                        </div>
+                        <div class="form-group">
+                            <label>Invoice Date</label>
+                            <input type="date" id="invDate" oninput="updatePreview()">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Place of Supply (State)</label>
+                            <input type="text" id="placeOfSupply" value="Andhra Pradesh (sample)" placeholder="e.g. Rajasthan, Andhra Pradesh" oninput="updatePreview()">
+                        </div>
+                        <div class="form-group">
+                            <label>Document Tag / Status</label>
+                            <input type="text" id="docBadge" value="SAMPLE • NOT FOR ACTUAL TAX USE" placeholder="e.g. SAMPLE • NOT FOR ACTUAL TAX USE" oninput="updatePreview()">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ChittorTech (Bill From) -->
+                <div class="card">
+                    <h3><i class="fa-solid fa-building"></i> ChittorTech Details (Bill From)</h3>
+                    <div class="form-group">
+                        <label>Company / Firm Name</label>
+                        <input type="text" id="supplierName" value="ChittorTech" oninput="updatePreview()">
+                    </div>
+                    <div class="form-group">
+                        <label>Tagline / Services Subtitle</label>
+                        <input type="text" id="supplierTagline" value="IT SERVICES • SOFTWARE • DIGITAL SOLUTIONS" oninput="updatePreview()">
+                    </div>
+                    <div class="form-group">
+                        <label>Address</label>
+                        <textarea id="supplierAddress" rows="2" oninput="updatePreview()">Chittorgarh, Rajasthan – 312001</textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>PAN Number (10 Chars)</label>
+                            <input type="text" id="supplierPAN" value="ABCDE1234F" placeholder="e.g. ABCDE1234F" oninput="updatePreview()">
+                        </div>
+                        <div class="form-group">
+                            <label>Supplier GSTIN (15 Chars: 08+PAN+1+Z+?)</label>
+                            <input type="text" id="supplierGSTIN" value="08ABCDE1234F1Z5" placeholder="e.g. 08ABCDE1234F1Z5" oninput="updatePreview()">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Client Details (Bill To) -->
+                <div class="card">
+                    <h3><i class="fa-solid fa-user"></i> Client Information (Bill To)</h3>
+                    <div class="form-group">
+                        <label>Customer Name / Business</label>
+                        <input type="text" id="clientName" value="Ample Health SEO (Ranga Muni Sir)" placeholder="Customer Name" oninput="updatePreview()">
+                    </div>
+                    <div class="form-group">
+                        <label>Customer Billing Address</label>
+                        <textarea id="clientAddress" rows="2" placeholder="Full address" oninput="updatePreview()">Andhra Pradesh</textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Customer GSTIN</label>
+                            <input type="text" id="clientGSTIN" value="Not provided (sample)" placeholder="Customer GSTIN or Unregistered" oninput="updatePreview()">
+                        </div>
+                        <div class="form-group">
+                            <label>Customer State / Contact</label>
+                            <input type="text" id="clientContact" value="" placeholder="Phone / Email / State Code" oninput="updatePreview()">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Service / Tax Classification & GST Configuration -->
+                <div class="card">
+                    <h3><i class="fa-solid fa-percent"></i> Tax & Service Details</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>GST Tax Type</label>
+                            <select id="gstTaxType" onchange="updatePreview()" style="width:100%;padding:10px;border-radius:8px;border:1px solid var(--border);background:rgba(255,255,255,0.6);">
+                                <option value="IGST" selected>IGST (Inter-State / Outside Rajasthan)</option>
+                                <option value="CGST_SGST">CGST + SGST (Intra-State / Within Rajasthan)</option>
+                                <option value="EXEMPT">Exempt / Zero Rated (0%)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Total GST Rate (%)</label>
+                            <select id="gstRate" onchange="updatePreview()" style="width:100%;padding:10px;border-radius:8px;border:1px solid var(--border);background:rgba(255,255,255,0.6);">
+                                <option value="18" selected>18% (Standard IT/Software)</option>
+                                <option value="12">12%</option>
+                                <option value="5">5%</option>
+                                <option value="28">28%</option>
+                                <option value="0">0% (Nil / Exempt)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Primary SAC / HSN Code</label>
+                            <input type="text" id="primarySAC" value="998314" placeholder="e.g. 998314 or 9983" oninput="updatePreview()">
+                        </div>
+                        <div class="form-group">
+                            <label>Reverse Charge (RCM)</label>
+                            <select id="reverseCharge" onchange="updatePreview()" style="width:100%;padding:10px;border-radius:8px;border:1px solid var(--border);background:rgba(255,255,255,0.6);">
+                                <option value="No (sample assumption)" selected>No (sample assumption)</option>
+                                <option value="No">No</option>
+                                <option value="Yes">Yes</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Service Description Note</label>
+                        <input type="text" id="serviceDescSummary" value="SEO & Google Business Profile Management" placeholder="Summary of service provided" oninput="updatePreview()">
+                    </div>
+                </div>
+
+                <!-- Items Container -->
+                <div class="card">
+                    <div class="card-header" style="align-items:flex-end;">
+                        <div>
+                            <h3><i class="fa-solid fa-list-check"></i> Invoice Items</h3>
+                            <div style="margin-top:6px;">
+                                <label style="font-size:11px;font-weight:600;color:var(--text-muted);">Currency Symbol</label>
+                                <input type="text" id="currencySymbol" value="₹" oninput="updatePreview()" style="width:50px;padding:4px;font-size:13px;border:1px solid var(--border);border-radius:4px;margin-left:6px;text-align:center;">
+                            </div>
+                        </div>
+                        <button class="add-btn" onclick="addItem()"><i class="fa-solid fa-plus"></i> Add Service</button>
+                    </div>
+                    <div id="itemsContainer"></div>
+                </div>
+
+                <!-- Payment & Bank Details -->
+                <div class="card">
+                    <h3><i class="fa-solid fa-building-columns"></i> Bank & Payment Details</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Bank Name</label>
+                            <input type="text" id="bankName" value="State Bank of India" oninput="updatePreview()">
+                        </div>
+                        <div class="form-group">
+                            <label>Account Number</label>
+                            <input type="text" id="accountNo" value="39871234567" oninput="updatePreview()">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>IFSC Code</label>
+                            <input type="text" id="ifscCode" value="SBIN0031200" oninput="updatePreview()">
+                        </div>
+                        <div class="form-group">
+                            <label>UPI ID</label>
+                            <input type="text" id="upiId" value="chittortech@upi" oninput="updatePreview()">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Compliance / Sample Note</label>
+                        <textarea id="complianceNote" rows="3" oninput="updatePreview()">Note: SAMPLE invoice only. Do not issue this as a real tax invoice until GST registration is approved and the GSTIN, PAN, SAC, place of supply, tax rate and customer details are verified. The 18% tax shown is illustrative.</textarea>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- ===== RIGHT: LIVE PREVIEW (MATCHING SAMPLE PDF) ===== -->
+            <section class="preview-panel">
+                <div id="print-area">
+                    <div id="invoice-preview">
+
+                        <div class="gst-body">
+
+                            <!-- 1. TOP HEADER (BRAND DETAILS) -->
+                            <div class="gst-top-header">
+                                <div class="gst-brand-col">
+                                    <img src="chittortech_logo_1775884354186.png" alt="ChittorTech Logo" class="gst-logo-img">
+                                    <div class="gst-brand-text">
+                                        <h1 id="prevSupplierName">CHITTORTECH</h1>
+                                        <div class="gst-brand-tagline" id="prevSupplierTagline">IT SERVICES • SOFTWARE • DIGITAL SOLUTIONS</div>
+                                        <div class="gst-brand-address" id="prevSupplierAddress">Chittorgarh, Rajasthan – 312001</div>
+                                        <div class="gst-brand-taxids">
+                                            <span>PAN: <span id="prevSupplierPAN">ABCDE1234F</span></span>
+                                            <span style="margin: 0 6px;">|</span>
+                                            <span>GSTIN: <span id="prevSupplierGSTIN">08ABCDE1234F1Z5</span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 2. CENTER TITLE & INVOICE NUMBER -->
+                            <div class="gst-center-header">
+                                <h2 class="gst-main-title">TAX INVOICE</h2>
+                                <div><span class="gst-badge" id="prevDocBadge">SAMPLE • NOT FOR ACTUAL TAX USE</span></div>
+                                <div class="gst-center-inv-no">INVOICE NUMBER: <span id="prevInvNumber">CT/2026-27/001</span></div>
+                            </div>
+
+                            <!-- 3. METADATA 3-COL BAR -->
+                            <div class="gst-meta-grid">
+                                <div class="gst-meta-cell">
+                                    <div class="gst-meta-label">Invoice Date</div>
+                                    <div class="gst-meta-value" id="prevInvDate">23 November 2026</div>
+                                </div>
+                                <div class="gst-meta-cell">
+                                    <div class="gst-meta-label">Place of Supply</div>
+                                    <div class="gst-meta-value" id="prevPlaceOfSupply">Andhra Pradesh (sample)</div>
+                                </div>
+                                <div class="gst-meta-cell">
+                                    <div class="gst-meta-label">Supplier GSTIN</div>
+                                    <div class="gst-meta-value" id="prevMetaGSTIN">08ABCDE1234F1Z5</div>
+                                </div>
+                            </div>
+
+                            <!-- 4. BILL FROM & BILL TO -->
+                            <div class="gst-parties-row">
+                                <div class="gst-info-box">
+                                    <div class="gst-box-title">BILL FROM</div>
+                                    <div class="gst-party-name" id="prevBillFromName">ChittorTech</div>
+                                    <div class="gst-party-detail" id="prevBillFromAddress">Chittorgarh, Rajasthan – 312001</div>
+                                    <div class="gst-party-detail"><strong>PAN:</strong> <span id="prevBillFromPAN">ABCDE1234F</span></div>
+                                    <div class="gst-party-detail"><strong>GSTIN:</strong> <span id="prevBillFromGSTIN">08ABCDE1234F1Z5</span></div>
+                                </div>
+                                <div class="gst-info-box">
+                                    <div class="gst-box-title">BILL TO</div>
+                                    <div class="gst-party-name" id="prevClientName">Ample Health SEO (Ranga Muni Sir)</div>
+                                    <div class="gst-party-detail"><strong>Address:</strong> <span id="prevClientAddress">Andhra Pradesh</span></div>
+                                    <div class="gst-party-detail"><strong>Customer GSTIN:</strong> <span id="prevClientGSTIN">Not provided (sample)</span></div>
+                                    <div class="gst-party-detail" id="prevClientContactRow" style="display:none;"><strong>Contact:</strong> <span id="prevClientContact"></span></div>
+                                </div>
+                            </div>
+
+                            <!-- 5. SERVICE / TAX DETAILS (FULL WIDTH, PAYMENT TERMS REMOVED) -->
+                            <div class="gst-service-strip">
+                                <div class="gst-box-title">SERVICE / TAX DETAILS</div>
+                                <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+                                    <div class="gst-party-detail" style="font-weight:600;color:#172b4d;font-size:12.5px;" id="prevServiceDescSummary">SEO & Google Business Profile Management</div>
+                                    <div class="gst-party-detail"><strong>SAC:</strong> <span id="prevPrimarySAC">998314</span></div>
+                                    <div class="gst-party-detail"><strong>Reverse Charge:</strong> <span id="prevReverseCharge">No (sample assumption)</span></div>
+                                </div>
+                            </div>
+
+                            <!-- 5. TABLE -->
+                            <table class="gst-table">
+                                <thead>
+                                    <tr>
+                                        <th class="gst-col-num">NO.</th>
+                                        <th class="gst-col-desc">DESCRIPTION OF SERVICE</th>
+                                        <th class="gst-col-qty">QTY</th>
+                                        <th class="gst-col-rate">RATE (<span class="prevCurrency">₹</span>)</th>
+                                        <th class="gst-col-amt">TAXABLE (<span class="prevCurrency">₹</span>)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="previewItems">
+                                    <!-- Dynamic rows -->
+                                </tbody>
+                            </table>
+
+                            <!-- 6. TOTALS & WORDS BOX -->
+                            <div class="gst-totals-wrap">
+                                <div class="gst-words-col">
+                                    <div class="gst-words-label">Amount in Words</div>
+                                    <div class="gst-words-val" id="prevAmountWords">Nine Thousand Four Hundred Forty Rupees Only</div>
+                                </div>
+                                <div class="gst-totals-table-col">
+                                    <div class="gst-total-line">
+                                        <span>Taxable Amount</span>
+                                        <span id="prevTaxableAmount">₹8,000.00</span>
+                                    </div>
+                                    <div id="dynamicTaxRows">
+                                        <!-- Tax lines dynamically injected (IGST or CGST+SGST) -->
+                                    </div>
+                                    <div class="gst-total-line gst-grand-total">
+                                        <span>GRAND TOTAL</span>
+                                        <span id="prevGrandTotal">₹9,440.00</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 7. BOTTOM DETAILS (BANK + AUTHORIZATION) -->
+                            <div class="gst-bottom-grid">
+                                <div class="gst-bank-box">
+                                    <div class="gst-box-title">BANK / PAYMENT DETAILS</div>
+                                    <div class="gst-party-detail"><strong>Bank Name:</strong> <span id="prevBankName">State Bank of India</span></div>
+                                    <div class="gst-party-detail"><strong>Account No:</strong> <span id="prevAccountNo">39871234567</span></div>
+                                    <div class="gst-party-detail"><strong>IFSC:</strong> <span id="prevIfscCode">SBIN0031200</span></div>
+                                    <div class="gst-party-detail"><strong>UPI ID:</strong> <span id="prevUpiId">chittortech@upi</span></div>
+                                </div>
+                                <div class="gst-auth-box">
+                                    <div class="gst-auth-label">Authorized Signatory</div>
+                                </div>
+                            </div>
+
+                            <!-- 8. FOOTER NOTE -->
+                            <div class="gst-footer-note" id="prevComplianceNote">
+                                Note: SAMPLE invoice only. Do not issue this as a real tax invoice until GST registration is approved and the GSTIN, PAN, SAC, place of supply, tax rate and customer details are verified. The 18% tax shown is illustrative.
+                            </div>
+
+                        </div><!-- /.gst-body -->
+
+                    </div><!-- /#invoice-preview -->
+                </div><!-- /#print-area -->
+            </section>
+
+        </main>
+    </div>
+
+    <!-- ===== JAVASCRIPT LOGIC ===== -->
+    <script>
+        let items = [
+            { id: 1, description: 'SEO & Google Business Profile Management', qty: 1, rate: 8000 }
+        ];
+
+        function _v(id) { const el = document.getElementById(id); return el ? el.value : ''; }
+        function _set(id, val) { const el = document.getElementById(id); if (el && val != null) el.value = val; }
+        function _st(id, val) { const el = document.getElementById(id); if (el) el.innerText = val; }
+
+        function _fmt(n) {
+            return n.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        function _fmtDate(raw) {
+            if (!raw) return '23 November 2026';
+            const d = new Date(raw);
+            if (isNaN(d)) return raw;
+            return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
+        }
+
+        /* Indian Number To Words */
+        function numberToWordsIndian(num) {
+            const a = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten',
+                       'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+            const b = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+
+            const rounded = Math.round(num);
+            if (rounded === 0) return 'Zero Rupees Only';
+
+            function convertLessThanOneThousand(n) {
+                let str = '';
+                if (n >= 100) {
+                    str += a[Math.floor(n / 100)] + ' Hundred ';
+                    n %= 100;
+                }
+                if (n > 0) {
+                    if (n < 20) {
+                        str += a[n] + ' ';
+                    } else {
+                        str += b[Math.floor(n / 10)] + ' ';
+                        if (n % 10 > 0) {
+                            str += a[n % 10] + ' ';
+                        }
+                    }
+                }
+                return str;
+            }
+
+            let rem = rounded;
+            let result = '';
+
+            const crore = Math.floor(rem / 10000000);
+            rem %= 10000000;
+            if (crore > 0) result += convertLessThanOneThousand(crore) + 'Crore ';
+
+            const lakh = Math.floor(rem / 100000);
+            rem %= 100000;
+            if (lakh > 0) result += convertLessThanOneThousand(lakh) + 'Lakh ';
+
+            const thousand = Math.floor(rem / 1000);
+            rem %= 1000;
+            if (thousand > 0) result += convertLessThanOneThousand(thousand) + 'Thousand ';
+
+            if (rem > 0) result += convertLessThanOneThousand(rem);
+
+            return (result.trim() + ' Rupees Only').replace(/\s+/g, ' ');
+        }
+
+        /* Persistence */
+        function saveData() {
+            const data = {
+                invNumber: _v('invNumber'),
+                invDate: _v('invDate'),
+                placeOfSupply: _v('placeOfSupply'),
+                docBadge: _v('docBadge'),
+                supplierName: _v('supplierName'),
+                supplierTagline: _v('supplierTagline'),
+                supplierAddress: _v('supplierAddress'),
+                supplierPAN: _v('supplierPAN'),
+                supplierGSTIN: _v('supplierGSTIN'),
+                clientName: _v('clientName'),
+                clientAddress: _v('clientAddress'),
+                clientGSTIN: _v('clientGSTIN'),
+                clientContact: _v('clientContact'),
+                gstTaxType: _v('gstTaxType'),
+                gstRate: _v('gstRate'),
+                primarySAC: _v('primarySAC'),
+                reverseCharge: _v('reverseCharge'),
+                serviceDescSummary: _v('serviceDescSummary'),
+                currencySymbol: _v('currencySymbol'),
+                bankName: _v('bankName'),
+                accountNo: _v('accountNo'),
+                ifscCode: _v('ifscCode'),
+                upiId: _v('upiId'),
+                complianceNote: _v('complianceNote'),
+                items: items
+            };
+            localStorage.setItem('chittortech_gst_bill_draft', JSON.stringify(data));
+        }
+
+        function loadData() {
+            const saved = localStorage.getItem('chittortech_gst_bill_draft');
+            if (!saved) return;
+            try {
+                const d = JSON.parse(saved);
+                for (let k in d) {
+                    if (k === 'items') {
+                        if (d.items && d.items.length) items = d.items;
+                    } else {
+                        _set(k, d[k]);
+                    }
+                }
+                if (!d.docBadge || d.docBadge === 'SAMPLE COPY ONLY') {
+                    _set('docBadge', 'SAMPLE • NOT FOR ACTUAL TAX USE');
+                }
+                if (!d.supplierPAN || d.supplierPAN === 'YOUR PAN HERE') {
+                    _set('supplierPAN', 'ABCDE1234F');
+                }
+                if (!d.supplierGSTIN || d.supplierGSTIN === 'YOUR GSTIN HERE') {
+                    _set('supplierGSTIN', '08ABCDE1234F1Z5');
+                }
+                if (!d.bankName || d.bankName === 'YOUR BANK NAME') {
+                    _set('bankName', 'State Bank of India');
+                }
+                if (!d.accountNo || d.accountNo === 'YOUR ACCOUNT NUMBER') {
+                    _set('accountNo', '39871234567');
+                }
+                if (!d.ifscCode || d.ifscCode === 'YOUR IFSC') {
+                    _set('ifscCode', 'SBIN0031200');
+                }
+                if (!d.upiId || d.upiId === 'YOUR UPI ID') {
+                    _set('upiId', 'chittortech@upi');
+                }
+                if (!d.primarySAC || d.primarySAC === 'To be confirmed') {
+                    _set('primarySAC', '998314');
+                }
+            } catch (e) {
+                console.error('Failed to load draft:', e);
+            }
+        }
+
+        function resetDraft() {
+            if (confirm('Are you sure you want to reset all fields to defaults?')) {
+                localStorage.removeItem('chittortech_gst_bill_draft');
+                window.location.reload();
+            }
+        }
+
+        /* Items Management */
+        function addItem() {
+            items.push({ id: Date.now(), description: '', qty: 1, rate: 0 });
+            renderItems();
+            updatePreview();
+        }
+
+        function removeItem(id) {
+            if (items.length <= 1) {
+                alert('At least one item is required.');
+                return;
+            }
+            items = items.filter(i => i.id !== id);
+            renderItems();
+            updatePreview();
+        }
+
+        function updateItem(id, field, value) {
+            const item = items.find(i => i.id === id);
+            if (item) {
+                item[field] = (field === 'qty' || field === 'rate') ? (parseFloat(value) || 0) : value;
+            }
+            updatePreview();
+        }
+
+        function renderItems() {
+            const c = document.getElementById('itemsContainer');
+            c.innerHTML = '';
+            items.forEach((item, idx) => {
+                const d = document.createElement('div');
+                d.className = 'item-row';
+                d.innerHTML = `
+                    <input type="text" placeholder="Description of Service" value="${item.description}"
+                        oninput="updateItem(${item.id},'description',this.value)" style="flex:2;">
+                    <input type="number" placeholder="Qty" value="${item.qty}"
+                        oninput="updateItem(${item.id},'qty',this.value)" style="width:70px;">
+                    <input type="number" placeholder="Rate" value="${item.rate}"
+                        oninput="updateItem(${item.id},'rate',this.value)" style="width:110px;">
+                    <button class="icon-btn" onclick="removeItem(${item.id})" title="Remove Item">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                `;
+                c.appendChild(d);
+            });
+        }
+
+        /* Preview Rendering & Math */
+        function updatePreview() {
+            // Dynamic Auto-fit for content scaling
+            const previewEl = document.getElementById('invoice-preview');
+            if (previewEl) {
+                previewEl.classList.remove('compact-mode', 'dense-mode');
+                if (items.length >= 3 && items.length <= 6) {
+                    previewEl.classList.add('compact-mode');
+                } else if (items.length > 6) {
+                    previewEl.classList.add('dense-mode');
+                }
+            }
+
+            const sym = _v('currencySymbol') || '₹';
+            document.querySelectorAll('.prevCurrency').forEach(el => el.innerText = sym);
+
+            // Document Info
+            _st('prevInvNumber', _v('invNumber') || 'CT/2026-27/001');
+            _st('prevInvDate', _fmtDate(_v('invDate')));
+            _st('prevPlaceOfSupply', _v('placeOfSupply') || 'Andhra Pradesh (sample)');
+            _st('prevDocBadge', _v('docBadge') || 'SAMPLE • NOT FOR ACTUAL TAX USE');
+
+            // Supplier Info
+            const sName = _v('supplierName') || 'ChittorTech';
+            _st('prevSupplierName', sName.toUpperCase());
+            _st('prevBillFromName', sName);
+            _st('prevSupplierTagline', _v('supplierTagline') || 'IT SERVICES • SOFTWARE • DIGITAL SOLUTIONS');
+            _st('prevSupplierAddress', _v('supplierAddress') || 'Chittorgarh, Rajasthan – 312001');
+            _st('prevBillFromAddress', _v('supplierAddress') || 'Chittorgarh, Rajasthan – 312001');
+            
+            const sPAN = _v('supplierPAN') || 'ABCDE1234F';
+            _st('prevSupplierPAN', sPAN);
+            _st('prevBillFromPAN', sPAN);
+
+            const sGSTIN = _v('supplierGSTIN') || '08ABCDE1234F1Z5';
+            _st('prevSupplierGSTIN', sGSTIN);
+            _st('prevBillFromGSTIN', sGSTIN);
+            _st('prevMetaGSTIN', sGSTIN);
+
+            // Client Info
+            _st('prevClientName', _v('clientName') || '—');
+            _st('prevClientAddress', _v('clientAddress') || '—');
+            _st('prevClientGSTIN', _v('clientGSTIN') || 'Not provided (sample)');
+
+            const cContact = _v('clientContact');
+            const cContactRow = document.getElementById('prevClientContactRow');
+            if (cContact && cContact.trim()) {
+                cContactRow.style.display = 'block';
+                _st('prevClientContact', cContact);
+            } else {
+                cContactRow.style.display = 'none';
+            }
+
+            // Service details
+            _st('prevServiceDescSummary', _v('serviceDescSummary') || (_v('clientName') ? 'Service Delivery' : '—'));
+            _st('prevPrimarySAC', _v('primarySAC') || '998314');
+            _st('prevReverseCharge', _v('reverseCharge') || 'No (sample assumption)');
+
+            // Bank details
+            _st('prevBankName', _v('bankName') || 'State Bank of India');
+            _st('prevAccountNo', _v('accountNo') || '39871234567');
+            _st('prevIfscCode', _v('ifscCode') || 'SBIN0031200');
+            _st('prevUpiId', _v('upiId') || 'chittortech@upi');
+
+            // Compliance Note
+            _st('prevComplianceNote', _v('complianceNote') || '');
+
+            // Items Table & Math
+            const tbody = document.getElementById('previewItems');
+            tbody.innerHTML = '';
+            let subtotal = 0;
+
+            items.forEach((item, idx) => {
+                const amt = (item.qty || 0) * (item.rate || 0);
+                subtotal += amt;
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="gst-col-num" style="font-weight:700;">${idx + 1}</td>
+                    <td class="gst-col-desc">${item.description || '<em style="color:#aaa;">Service Description</em>'}</td>
+                    <td class="gst-col-qty">${item.qty}</td>
+                    <td class="gst-col-rate">${sym}${_fmt(item.rate)}</td>
+                    <td class="gst-col-amt">${sym}${_fmt(amt)}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            _st('prevTaxableAmount', sym + _fmt(subtotal));
+
+            // Taxes
+            const taxType = _v('gstTaxType');
+            const totalRate = parseFloat(_v('gstRate')) || 0;
+            const taxRowsDiv = document.getElementById('dynamicTaxRows');
+            taxRowsDiv.innerHTML = '';
+
+            let totalTaxAmt = 0;
+
+            if (taxType === 'IGST' && totalRate > 0) {
+                const igstAmt = subtotal * (totalRate / 100);
+                totalTaxAmt += igstAmt;
+                taxRowsDiv.innerHTML = `
+                    <div class="gst-total-line">
+                        <span>IGST @ ${totalRate}% (illustration)</span>
+                        <span>${sym}${_fmt(igstAmt)}</span>
+                    </div>
+                `;
+            } else if (taxType === 'CGST_SGST' && totalRate > 0) {
+                const halfRate = totalRate / 2;
+                const halfAmt = subtotal * (halfRate / 100);
+                totalTaxAmt += halfAmt * 2;
+                taxRowsDiv.innerHTML = `
+                    <div class="gst-total-line">
+                        <span>CGST @ ${halfRate}%</span>
+                        <span>${sym}${_fmt(halfAmt)}</span>
+                    </div>
+                    <div class="gst-total-line">
+                        <span>SGST @ ${halfRate}%</span>
+                        <span>${sym}${_fmt(halfAmt)}</span>
+                    </div>
+                `;
+            } else if (taxType === 'EXEMPT' || totalRate === 0) {
+                taxRowsDiv.innerHTML = `
+                    <div class="gst-total-line">
+                        <span>GST (0% / Exempt)</span>
+                        <span>${sym}0.00</span>
+                    </div>
+                `;
+            }
+
+            const grandTotal = subtotal + totalTaxAmt;
+            _st('prevGrandTotal', sym + _fmt(grandTotal));
+
+            // Words
+            const words = numberToWordsIndian(grandTotal);
+            _st('prevAmountWords', words);
+
+            saveData();
+        }
+
+        /* PDF Generation matching A4 pixel perfect */
+        async function downloadPDF() {
+            const btn = document.getElementById('downloadPdfBtn');
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Generating...';
+            btn.disabled = true;
+
+            try {
+                const element = document.getElementById('invoice-preview');
+                const canvas = await html2canvas(element, {
+                    scale: 3,
+                    useCORS: true,
+                    allowTaint: true,
+                    backgroundColor: '#ffffff',
+                    logging: false,
+                    width: element.scrollWidth,
+                    height: element.scrollHeight
+                });
+
+                const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF({
+                    orientation: 'portrait',
+                    unit: 'mm',
+                    format: 'a4'
+                });
+
+                const pdfW = pdf.internal.pageSize.getWidth();
+                const pdfH = pdf.internal.pageSize.getHeight();
+                const ratio = canvas.height / canvas.width;
+                const imgH = pdfW * ratio;
+
+                // GUARANTEED ALWAYS 1 SINGLE PAGE
+                let renderW = pdfW;
+                let renderH = imgH;
+                let xOffset = 0;
+                let yOffset = 0;
+
+                if (renderH > pdfH) {
+                    const scaleFactor = pdfH / renderH;
+                    renderW = pdfW * scaleFactor;
+                    renderH = pdfH;
+                    xOffset = (pdfW - renderW) / 2;
+                }
+
+                pdf.addImage(imgData, 'JPEG', xOffset, yOffset, renderW, renderH);
+
+                const client = (_v('clientName') || 'Client').replace(/[^a-zA-Z0-9_-]/g, '_');
+                const docNum = (_v('invNumber') || '001').replace(/[^a-zA-Z0-9_-]/g, '_');
+                pdf.save(`ChittorTech_GST_Invoice_${docNum}_${client}.pdf`);
+
+            } catch (err) {
+                console.error('PDF generation failed:', err);
+                alert('PDF generation failed. Please try again.');
+            } finally {
+                btn.innerHTML = originalHTML;
+                btn.disabled = false;
+            }
+        }
+
+        /* Initial Setup */
+        document.addEventListener('DOMContentLoaded', () => {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('invDate').value = today;
+            loadData();
+            renderItems();
+            updatePreview();
+        });
+    </script>
+</body>
+</html>
