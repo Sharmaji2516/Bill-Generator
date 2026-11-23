@@ -27,34 +27,114 @@
             --gst-row-alt: #f8fafc;
         }
 
-        /* ─── A4 Invoice Preview Container ─────────────────────────────────── */
+        /* ─── A4 Invoice Preview Container (Zoho Style Natural Fit) ───────── */
         #invoice-preview {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: #ffffff;
             color: var(--gst-text);
             width: 210mm;
-            min-height: 297mm;
+            min-height: auto;
             height: auto;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
             box-sizing: border-box;
-            padding: 24px 28px 20px 28px;
-            font-size: 12.5px;
-            line-height: 1.5;
+            padding: 8mm; /* Safe printable margin so all 4 borders are 100% visible on any printer */
             position: relative;
             margin: 0 auto;
-            border: 3px solid #0B2545;
-            border-radius: 0;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         }
 
         .gst-body {
-            flex: 1;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
-            height: 100%;
+            height: auto;
+            border: 1.5px solid #0B2545;
+            padding: 18px 22px 16px 22px;
+            box-sizing: border-box;
+            background: #ffffff;
+            border-radius: 2px;
+        }
+
+        /* Natural Zoho-Style Section Spacing */
+        .gst-top-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding-bottom: 12px;
+            border-bottom: 1.5px solid #0B2545;
+            margin-bottom: 10px;
+        }
+
+        .gst-center-header {
+            text-align: center;
+            padding: 8px 0;
+            margin-bottom: 10px;
+            border-bottom: 1.5px solid var(--gst-navy);
+        }
+
+        .gst-meta-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr 1.2fr;
+            border: 1px solid var(--gst-bdr);
+            background: #fcfdfe;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .gst-parties-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .gst-service-strip {
+            border: 1px solid var(--gst-bdr);
+            border-radius: 4px;
+            padding: 8px 14px;
+            background: #ffffff;
+            margin-bottom: 10px;
+        }
+
+        .gst-totals-wrap {
+            display: flex;
+            border-left: 1px solid var(--gst-bdr);
+            border-right: 1px solid var(--gst-bdr);
+            border-bottom: 1px solid var(--gst-bdr);
+            background: #ffffff;
+            margin-bottom: 10px;
+        }
+
+        .gst-bottom-grid {
+            display: grid;
+            grid-template-columns: 1.25fr 1fr;
+            gap: 12px;
+            margin-bottom: 10px;
+            margin-top: 2px;
+        }
+
+        .gst-bank-box {
+            border: 1px solid var(--gst-bdr);
+            border-radius: 4px;
+            padding: 10px 14px;
+            background: #ffffff;
+            min-height: 110px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        .gst-auth-box {
+            border: 1px solid var(--gst-bdr);
+            border-radius: 4px;
+            padding: 10px 14px;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            min-height: 110px;
         }
 
         /* ─── Dynamic Auto-Fit Modes (Adjusts based on item count) ───────── */
@@ -405,7 +485,7 @@
             font-weight: 800;
         }
 
-        /* ─── 7. Bottom Grid (Bank + Authorization: BIGGER BOXES) ─────────── */
+        /* ─── 7. Bottom Grid (Bank + Authorization: Compact Zoho Style) ─── */
         .gst-bottom-grid {
             display: grid;
             grid-template-columns: 1.25fr 1fr;
@@ -414,48 +494,48 @@
         }
 
         .gst-bank-box {
-            border: 1.5px solid var(--gst-bdr);
+            border: 1px solid var(--gst-bdr);
             border-radius: 4px;
-            padding: 12px 16px;
+            padding: 8px 14px;
             background: #ffffff;
-            min-height: 145px;
+            min-height: 85px;
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
         }
 
         .gst-bank-box .gst-box-title {
-            font-size: 11.5px;
+            font-size: 11px;
             font-weight: 800;
             text-transform: uppercase;
             color: var(--gst-navy);
-            border-bottom: 1.5px dashed var(--gst-bdr);
-            padding-bottom: 4px;
-            margin-bottom: 8px;
+            border-bottom: 1px dashed var(--gst-bdr);
+            padding-bottom: 3px;
+            margin-bottom: 6px;
             letter-spacing: 0.6px;
         }
 
         .gst-bank-box .gst-party-detail {
-            font-size: 12.5px;
+            font-size: 11.5px;
             color: var(--gst-muted);
-            margin: 3px 0;
-            line-height: 1.5;
+            margin: 2px 0;
+            line-height: 1.4;
         }
 
         .gst-auth-box {
-            border: 1.5px solid var(--gst-bdr);
+            border: 1px solid var(--gst-bdr);
             border-radius: 4px;
-            padding: 10px 14px;
+            padding: 8px 12px;
             background: #ffffff;
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
-            min-height: 120px;
+            min-height: 85px;
         }
 
         .gst-auth-label {
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 800;
             color: var(--gst-navy);
             letter-spacing: 0.5px;
@@ -505,13 +585,17 @@
             }
             #invoice-preview {
                 width: 100% !important;
-                min-height: 297mm !important;
+                min-height: auto !important;
                 height: auto !important;
                 box-shadow: none !important;
-                padding: 14mm 14mm 10mm 14mm !important;
-                border: 3px solid #0B2545 !important;
+                padding: 6mm !important;
+                border: none !important;
                 box-sizing: border-box !important;
                 overflow: visible !important;
+            }
+            .gst-body {
+                border: 2.5px solid #0B2545 !important;
+                box-sizing: border-box !important;
             }
             tr {
                 page-break-inside: avoid !important;
@@ -1237,7 +1321,7 @@
                     xOffset = (pdfW - renderW) / 2;
                 }
 
-                pdf.addImage(imgData, 'JPEG', xOffset, yOffset, renderW, renderH);
+                pdf.addImage(imgData, 'JPEG', xOffset, 0, renderW, renderH);
 
                 const client = (_v('clientName') || 'Client').replace(/[^a-zA-Z0-9_-]/g, '_');
                 const docNum = (_v('invNumber') || '001').replace(/[^a-zA-Z0-9_-]/g, '_');
