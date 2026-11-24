@@ -659,7 +659,7 @@
                         </div>
                         <div class="form-group">
                             <label>Document Tag / Status</label>
-                            <input type="text" id="docBadge" value="SAMPLE • NOT FOR ACTUAL TAX USE" placeholder="e.g. SAMPLE • NOT FOR ACTUAL TAX USE" oninput="updatePreview()">
+                            <input type="text" id="docBadge" value="ORIGINAL FOR RECIPIENT" placeholder="e.g. ORIGINAL FOR RECIPIENT" oninput="updatePreview()">
                         </div>
                     </div>
                 </div>
@@ -682,11 +682,11 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label>PAN Number (10 Chars)</label>
-                            <input type="text" id="supplierPAN" value="ABCDE1234F" placeholder="e.g. ABCDE1234F" oninput="updatePreview()">
+                            <input type="text" id="supplierPAN" value="OTWPS1188A" placeholder="e.g. OTWPS1188A" oninput="updatePreview()">
                         </div>
                         <div class="form-group">
-                            <label>Supplier GSTIN (15 Chars: 08+PAN+1+Z+?)</label>
-                            <input type="text" id="supplierGSTIN" value="08ABCDE1234F1Z5" placeholder="e.g. 08ABCDE1234F1Z5" oninput="updatePreview()">
+                            <label>Supplier GSTIN (15 Chars)</label>
+                            <input type="text" id="supplierGSTIN" value="08OTWPS1188A1ZV" placeholder="e.g. 08OTWPS1188A1ZV" oninput="updatePreview()">
                         </div>
                     </div>
                 </div>
@@ -796,8 +796,8 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label>Compliance / Sample Note</label>
-                        <textarea id="complianceNote" rows="3" oninput="updatePreview()">Note: SAMPLE invoice only. Do not issue this as a real tax invoice until GST registration is approved and the GSTIN, PAN, SAC, place of supply, tax rate and customer details are verified. The 18% tax shown is illustrative.</textarea>
+                        <label>Compliance / Declaration Note</label>
+                        <textarea id="complianceNote" rows="3" oninput="updatePreview()">Certified that the particulars given above are true and correct and the amount indicated represents the price actually charged.</textarea>
                     </div>
                 </div>
 
@@ -819,9 +819,9 @@
                                         <div class="gst-brand-tagline" id="prevSupplierTagline">IT SERVICES • SOFTWARE • DIGITAL SOLUTIONS</div>
                                         <div class="gst-brand-address" id="prevSupplierAddress">Chittorgarh, Rajasthan – 312001</div>
                                         <div class="gst-brand-taxids">
-                                            <span>PAN: <span id="prevSupplierPAN">ABCDE1234F</span></span>
+                                            <span>PAN: <span id="prevSupplierPAN">OTWPS1188A</span></span>
                                             <span style="margin: 0 6px;">|</span>
-                                            <span>GSTIN: <span id="prevSupplierGSTIN">08ABCDE1234F1Z5</span></span>
+                                            <span>GSTIN: <span id="prevSupplierGSTIN">08OTWPS1188A1ZV</span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -830,7 +830,7 @@
                             <!-- 2. CENTER TITLE & INVOICE NUMBER -->
                             <div class="gst-center-header">
                                 <h2 class="gst-main-title">TAX INVOICE</h2>
-                                <div><span class="gst-badge" id="prevDocBadge">SAMPLE • NOT FOR ACTUAL TAX USE</span></div>
+                                <div><span class="gst-badge" id="prevDocBadge">ORIGINAL FOR RECIPIENT</span></div>
                                 <div class="gst-center-inv-no">INVOICE NUMBER: <span id="prevInvNumber">CT/2026-27/001</span></div>
                             </div>
 
@@ -846,7 +846,7 @@
                                 </div>
                                 <div class="gst-meta-cell">
                                     <div class="gst-meta-label">Supplier GSTIN</div>
-                                    <div class="gst-meta-value" id="prevMetaGSTIN">08ABCDE1234F1Z5</div>
+                                    <div class="gst-meta-value" id="prevMetaGSTIN">08OTWPS1188A1ZV</div>
                                 </div>
                             </div>
 
@@ -856,8 +856,8 @@
                                     <div class="gst-box-title">BILL FROM</div>
                                     <div class="gst-party-name" id="prevBillFromName">ChittorTech</div>
                                     <div class="gst-party-detail" id="prevBillFromAddress">Chittorgarh, Rajasthan – 312001</div>
-                                    <div class="gst-party-detail"><strong>PAN:</strong> <span id="prevBillFromPAN">ABCDE1234F</span></div>
-                                    <div class="gst-party-detail"><strong>GSTIN:</strong> <span id="prevBillFromGSTIN">08ABCDE1234F1Z5</span></div>
+                                    <div class="gst-party-detail"><strong>PAN:</strong> <span id="prevBillFromPAN">OTWPS1188A</span></div>
+                                    <div class="gst-party-detail"><strong>GSTIN:</strong> <span id="prevBillFromGSTIN">08OTWPS1188A1ZV</span></div>
                                 </div>
                                 <div class="gst-info-box">
                                     <div class="gst-box-title">BILL TO</div>
@@ -931,7 +931,7 @@
 
                             <!-- 8. FOOTER NOTE -->
                             <div class="gst-footer-note" id="prevComplianceNote">
-                                Note: SAMPLE invoice only. Do not issue this as a real tax invoice until GST registration is approved and the GSTIN, PAN, SAC, place of supply, tax rate and customer details are verified. The 18% tax shown is illustrative.
+                                Certified that the particulars given above are true and correct and the amount indicated represents the price actually charged.
                             </div>
 
                         </div><!-- /.gst-body -->
@@ -1056,14 +1056,17 @@
                         _set(k, d[k]);
                     }
                 }
-                if (!d.docBadge || d.docBadge === 'SAMPLE COPY ONLY') {
-                    _set('docBadge', 'SAMPLE • NOT FOR ACTUAL TAX USE');
+                if (!d.docBadge || d.docBadge === 'SAMPLE COPY ONLY' || d.docBadge === 'SAMPLE • NOT FOR ACTUAL TAX USE') {
+                    _set('docBadge', 'ORIGINAL FOR RECIPIENT');
                 }
-                if (!d.supplierPAN || d.supplierPAN === 'YOUR PAN HERE') {
-                    _set('supplierPAN', 'ABCDE1234F');
+                if (!d.supplierPAN || d.supplierPAN === 'YOUR PAN HERE' || d.supplierPAN === 'ABCDE1234F') {
+                    _set('supplierPAN', 'OTWPS1188A');
                 }
-                if (!d.supplierGSTIN || d.supplierGSTIN === 'YOUR GSTIN HERE') {
-                    _set('supplierGSTIN', '08ABCDE1234F1Z5');
+                if (!d.supplierGSTIN || d.supplierGSTIN === 'YOUR GSTIN HERE' || d.supplierGSTIN === '08ABCDE1234F1Z5') {
+                    _set('supplierGSTIN', '08OTWPS1188A1ZV');
+                }
+                if (!d.complianceNote || d.complianceNote.includes('SAMPLE invoice only')) {
+                    _set('complianceNote', 'Certified that the particulars given above are true and correct and the amount indicated represents the price actually charged.');
                 }
                 if (!d.bankName || d.bankName === 'YOUR BANK NAME') {
                     _set('bankName', 'State Bank of India');
@@ -1158,7 +1161,7 @@
             _st('prevInvNumber', _v('invNumber') || 'CT/2026-27/001');
             _st('prevInvDate', _fmtDate(_v('invDate')));
             _st('prevPlaceOfSupply', _v('placeOfSupply') || 'Andhra Pradesh (sample)');
-            _st('prevDocBadge', _v('docBadge') || 'SAMPLE • NOT FOR ACTUAL TAX USE');
+            _st('prevDocBadge', _v('docBadge') || 'ORIGINAL FOR RECIPIENT');
 
             // Supplier Info
             const sName = _v('supplierName') || 'ChittorTech';
@@ -1168,11 +1171,11 @@
             _st('prevSupplierAddress', _v('supplierAddress') || 'Chittorgarh, Rajasthan – 312001');
             _st('prevBillFromAddress', _v('supplierAddress') || 'Chittorgarh, Rajasthan – 312001');
             
-            const sPAN = _v('supplierPAN') || 'ABCDE1234F';
+            const sPAN = _v('supplierPAN') || 'OTWPS1188A';
             _st('prevSupplierPAN', sPAN);
             _st('prevBillFromPAN', sPAN);
 
-            const sGSTIN = _v('supplierGSTIN') || '08ABCDE1234F1Z5';
+            const sGSTIN = _v('supplierGSTIN') || '08OTWPS1188A1ZV';
             _st('prevSupplierGSTIN', sGSTIN);
             _st('prevBillFromGSTIN', sGSTIN);
             _st('prevMetaGSTIN', sGSTIN);
