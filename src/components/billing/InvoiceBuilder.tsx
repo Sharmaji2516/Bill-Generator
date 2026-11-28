@@ -8,7 +8,6 @@ import {
   Eye,
   CheckCircle2,
   Loader2,
-  Sparkles,
   UserPlus,
   ShieldCheck,
   X,
@@ -17,7 +16,6 @@ import { useBusiness } from '@/contexts/BusinessContext';
 import { useConfirmationModal } from '@/contexts/ConfirmationModalContext';
 import { calculateInvoiceTotals, formatINR, getIndianFinancialYear } from '@/lib/billing/gstEngine';
 import { getDocumentPrefix, INDIAN_STATES } from '@/lib/billing/businesses';
-import { detectLegacyLocalStorageDrafts, ImportedLegacyDraft } from '@/lib/billing/legacyDraftImporter';
 import { InvoicePreviewModal } from './templates/InvoicePreviewModal';
 import {
   BillingDocumentType,
@@ -185,15 +183,9 @@ export const InvoiceBuilder: React.FC<InvoiceBuilderProps> = ({
   );
 
   // UI & Modals
-  const [legacyDrafts, setLegacyDrafts] = useState<ImportedLegacyDraft[]>([]);
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [showLiveSheetModal, setShowLiveSheetModal] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-
-  // Detect any legacy localStorage drafts on mount
-  useEffect(() => {
-    setLegacyDrafts(detectLegacyLocalStorageDrafts());
-  }, []);
 
   // Refresh defaults when switching active Business on a brand new invoice
   useEffect(() => {
@@ -219,8 +211,12 @@ export const InvoiceBuilder: React.FC<InvoiceBuilderProps> = ({
         );
         if (res.ok) {
           const data = await res.json();
-          if (data.nextNumber) {
-            setSuggestedNumber(data.nextNumber);
+          const resolvedNum =
+            typeof data.nextNumber === 'string'
+              ? data.nextNumber
+              : data.nextNumber?.invoiceNumber;
+          if (resolvedNum) {
+            setSuggestedNumber(resolvedNum);
           }
         }
       } catch {
@@ -431,27 +427,6 @@ export const InvoiceBuilder: React.FC<InvoiceBuilderProps> = ({
     digitalSeal,
   ]);
 
-  const handleImportLegacyDraft = (draft: ImportedLegacyDraft) => {
-    setDocumentType(draft.documentType);
-    setTemplateId(draft.templateId);
-    if (draft.invoiceNumber) setInvoiceNumber(draft.invoiceNumber);
-    if (draft.issueDate) setIssueDate(draft.issueDate);
-    if (draft.dueDate) setDueDate(draft.dueDate);
-    setCustName(draft.customerName);
-    setCustEmail(draft.customerEmail);
-    setCustPhone(draft.customerPhone);
-    setCustAddr(draft.customerAddress);
-    setCustGstin(draft.customerGstin);
-    if (draft.items.length > 0) setItems(draft.items);
-    if (draft.notes) setNotes(draft.notes);
-    if (draft.paymentInfo) setPaymentInfo(draft.paymentInfo);
-    showSuccess({
-      title: 'Legacy Draft Imported',
-      message: `${draft.label} loaded into the builder. Review and save to billing_details.`,
-      duration: 2300,
-    });
-  };
-
   const handleOpenReview = (e: React.FormEvent) => {
     e.preventDefault();
     if (!custName.trim()) {
@@ -551,30 +526,6 @@ export const InvoiceBuilder: React.FC<InvoiceBuilderProps> = ({
 
   return (
     <form onSubmit={handleOpenReview} className="space-y-5 animate-fadeIn">
-      {/* Legacy Draft Detection Banner */}
-      {!source && legacyDrafts.length > 0 && (
-        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-          <div className="flex items-center gap-2 text-amber-900 font-semibold">
-            <Sparkles className="w-4 h-4 text-amber-600 shrink-0" />
-            <span>
-              Legacy local drafts detected from previous HTML billing version. Import into this editor?
-            </span>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {legacyDrafts.map((d) => (
-              <button
-                key={d.sourceKey}
-                type="button"
-                onClick={() => handleImportLegacyDraft(d)}
-                className="px-3 py-1.5 rounded-xl bg-white border border-amber-300 font-bold text-amber-800 hover:bg-amber-100"
-              >
-                Import {d.label}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
       {/* Top Mode & Template Bar (Exact LMS NewEntryForm top control bar) */}
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>

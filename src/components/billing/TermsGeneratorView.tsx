@@ -1,11 +1,10 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { ScrollText, Save, Download, Printer, Sparkles, Loader2 } from 'lucide-react';
+import { ScrollText, Save, Download, Printer, Loader2 } from 'lucide-react';
 import { useBusiness } from '@/contexts/BusinessContext';
 import { useConfirmationModal } from '@/contexts/ConfirmationModalContext';
 import { exportInvoiceElementToPdf } from '@/lib/billing/exportService';
-import { detectLegacyTermsContent } from '@/lib/billing/legacyDraftImporter';
 
 const DEFAULT_TERMS_MARKDOWN = `1. Scope of Work & Deliverables
 **Scope Definition:** All deliverables, milestones, and technical specifications shall adhere strictly to the approved quotation or statement of work issued by ChittorTech.
@@ -33,11 +32,9 @@ export const TermsGeneratorView: React.FC = () => {
   );
   const [effectiveDate, setEffectiveDate] = useState(new Date().toISOString().split('T')[0]);
   const [rawContent, setRawContent] = useState(DEFAULT_TERMS_MARKDOWN);
-  const [legacyAvailable, setLegacyAvailable] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    setLegacyAvailable(detectLegacyTermsContent());
     const loadSaved = async () => {
       try {
         const res = await fetch(
@@ -118,15 +115,6 @@ export const TermsGeneratorView: React.FC = () => {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          {legacyAvailable && (
-            <button
-              type="button"
-              onClick={() => setRawContent(legacyAvailable)}
-              className="inline-flex items-center gap-1.5 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2 text-xs font-bold text-amber-800 hover:bg-amber-100"
-            >
-              <Sparkles className="w-3.5 h-3.5" /> Import Legacy Terms
-            </button>
-          )}
           <button
             type="button"
             onClick={() => window.print()}

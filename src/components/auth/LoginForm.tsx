@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Mail,
   KeyRound,
@@ -11,13 +11,28 @@ import {
   ArrowLeft,
   CheckCircle2,
   RefreshCw,
+  Clock,
 } from 'lucide-react';
 import { AuthInput } from './AuthInput';
+import { TurnstileWidget } from './TurnstileWidget';
 import { useAuth } from '@/contexts/AuthContext';
 import { useConfirmationModal } from '@/contexts/ConfirmationModalContext';
 
 interface LoginFormProps {
   onSuccess: () => void;
+}
+
+const LOCKOUT_STORAGE_KEY = 'ct_billing_login_lockout_v1';
+
+interface PersistedLockout {
+  email: string;
+  lockedUntil: number;
+}
+
+function formatCountdown(totalSeconds: number): string {
+  const mins = Math.floor(totalSeconds / 60);
+  const secs = totalSeconds % 60;
+  return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
 }
 
 export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
@@ -32,6 +47,84 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
   const [error, setError] = useState<string | null>(null);
   const [cooldown, setCooldown] = useState(0);
 
+  // Cloudflare Turnstile & 3-Attempt Lockout State
+  const [turnstileSiteKey, setTurnstileSiteKey] = useState<string>(
+    process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ''
+  );
+  const [turnstileConfigured, setTurnstileConfigured] = useState<boolean>(
+    Boolean(process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY)
+  );
+  const [turnstileIsTestMode, setTurnstileIsTestMode] = useState<boolean>(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [turnstileError, setTurnstileError] = useState<string | undefined>(undefined);
+  const [turnstileResetKey, setTurnstileResetKey] = useState<number>(0);
+
+  const [lockedUntil, setLockedUntil] = useState<number | null>(null);
+  const [lockoutSecondsRemaining, setLockoutSecondsRemaining] = useState<number>(0);
+
+  useEffect(() => {
+    let active = true;
+    fetch('/api/auth', { cache: 'no-store' })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (!active || !data?.turnstile) return;
+        setTurnstileConfigured(Boolean(data.turnstile.configured));
+        setTurnstileSiteKey(data.turnstile.siteKey || '');
+        setTurnstileIsTestMode(Boolean(data.turnstile.isTestKeys));
+      })
+      .catch(() => {
+        // fallback cleanly to NEXT_PUBLIC env value
+      });
+
+    try {
+      const saved = window.localStorage.getItem(LOCKOUT_STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved) as PersistedLockout;
+        if (parsed?.lockedUntil && parsed.lockedUntil > Date.now()) {
+          if (parsed.email) setEmail(parsed.email);
+          setLockedUntil(parsed.lockedUntil);
+          setLockoutSecondsRemaining(Math.ceil((parsed.lockedUntil - Date.now()) / 1000));
+        } else {
+          window.localStorage.removeItem(LOCKOUT_STORAGE_KEY);
+        }
+      }
+    } catch {
+      // ignore storage errors
+    }
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!lockedUntil) {
+      setLockoutSecondsRemaining(0);
+      return;
+    }
+
+    const updateTimer = () => {
+      const diffSec = Math.ceil((lockedUntil - Date.now()) / 1000);
+      if (diffSec <= 0) {
+        setLockedUntil(null);
+        setLockoutSecondsRemaining(0);
+        setError(null);
+        setTurnstileResetKey((k) => k + 1);
+        try {
+          window.localStorage.removeItem(LOCKOUT_STORAGE_KEY);
+        } catch {
+          // ignore
+        }
+      } else {
+        setLockoutSecondsRemaining(diffSec);
+      }
+    };
+
+    updateTimer();
+    const interval = setInterval(updateTimer, 1000);
+    return () => clearInterval(interval);
+  }, [lockedUntil]);
+
   useEffect(() => {
     if (cooldown <= 0) return;
     const t = setInterval(() => {
@@ -40,12 +133,38 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
     return () => clearInterval(t);
   }, [cooldown]);
 
+  const handleTurnstileTokenChange = useCallback((token: string | null) => {
+    setTurnstileToken(token);
+    if (token) setTurnstileError(undefined);
+  }, []);
+
+  const handleTurnstileScriptError = useCallback((msg: string) => {
+    setTurnstileError(msg);
+  }, []);
+
+  const isLockedOut = lockoutSecondsRemaining > 0;
+
   const handleRequestOtp = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setTurnstileError(undefined);
+
+    if (isLockedOut) {
+      setError(
+        'Too many unsuccessful login attempts. Your account has been temporarily locked for 5 minutes. Please try again later.'
+      );
+      return;
+    }
 
     if (!email.trim() || !passcode.trim()) {
       setError('Both ChittorTech admin email and access key are required.');
+      return;
+    }
+
+    if (!turnstileToken) {
+      const msg = 'Please complete the security CAPTCHA verification.';
+      setTurnstileError(msg);
+      setError(msg);
       return;
     }
 
@@ -58,15 +177,51 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
           action: 'verify_passcode_send_otp',
           email: email.trim(),
           passcode: passcode.trim(),
+          turnstileToken,
         }),
       });
       const data = await res.json();
 
       if (!res.ok) {
+        setTurnstileToken(null);
+        setTurnstileResetKey((k) => k + 1);
+
+        if (res.status === 423 || data?.locked) {
+          const until =
+            typeof data.lockedUntil === 'number'
+              ? data.lockedUntil
+              : Date.now() + (Number(data.remainingSeconds) || 300) * 1000;
+          setLockedUntil(until);
+          setLockoutSecondsRemaining(Math.max(1, Math.ceil((until - Date.now()) / 1000)));
+          try {
+            window.localStorage.setItem(
+              LOCKOUT_STORAGE_KEY,
+              JSON.stringify({ email: email.trim().toLowerCase(), lockedUntil: until })
+            );
+          } catch {
+            // ignore
+          }
+          setError(
+            data.error ||
+              'Too many unsuccessful login attempts. Your account has been temporarily locked for 5 minutes. Please try again later.'
+          );
+          return;
+        }
+
+        if (
+          data?.code === 'CAPTCHA_REQUIRED' ||
+          data?.code === 'CAPTCHA_FAILED' ||
+          data?.code === 'CAPTCHA_REPLAYED' ||
+          data?.code === 'CAPTCHA_NOT_CONFIGURED'
+        ) {
+          setTurnstileError(data.error);
+        }
+
         setError(data.error || 'Unable to dispatch OTP code.');
         return;
       }
 
+      setTurnstileToken(null);
       setStep('otp');
       setCooldown(30);
       showSuccess({
@@ -76,6 +231,8 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
         duration: 2400,
       });
     } catch {
+      setTurnstileToken(null);
+      setTurnstileResetKey((k) => k + 1);
       setError('Network error while connecting to ChittorTech authentication server.');
     } finally {
       setLoading(false);
@@ -109,6 +266,11 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
       }
 
       setAuthenticatedSession(data.session);
+      try {
+        window.localStorage.removeItem(LOCKOUT_STORAGE_KEY);
+      } catch {
+        // ignore
+      }
       showSuccess({
         title: 'Signed In Successfully',
         message: 'Welcome back to ChittorTech Multi-Business Billing Software.',
@@ -156,7 +318,27 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
         </div>
       )}
 
-      {error && (
+      {isLockedOut && (
+        <div
+          role="alert"
+          className="rounded-md border border-red-300 bg-red-50/90 p-3 text-xs text-red-800 space-y-1.5"
+        >
+          <div className="flex items-start gap-2">
+            <Clock className="h-4 w-4 text-red-600 shrink-0 mt-0.5" />
+            <div className="space-y-1">
+              <p className="font-semibold text-red-900">
+                Too many unsuccessful login attempts. Your account has been temporarily locked for
+                5 minutes. Please try again later.
+              </p>
+              <p className="text-[11px] font-mono font-bold text-red-700">
+                Account unlocks in: {formatCountdown(lockoutSecondsRemaining)}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {error && !isLockedOut && (
         <div className="flex items-start gap-2.5 rounded-md border border-red-200 bg-red-50 p-3 text-xs text-red-700 animate-fadeIn">
           <AlertCircle className="h-4 w-4 text-red-600 shrink-0 mt-0.5" />
           <p className="font-medium leading-relaxed">{error}</p>
@@ -170,7 +352,11 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
             type="email"
             placeholder="admin@chittortech.in"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              if (error) setError(null);
+            }}
+            disabled={loading || isLockedOut}
             required
             autoComplete="email"
             icon={<Mail className="h-4 w-4" />}
@@ -181,22 +367,41 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
             type="password"
             placeholder="Enter admin access key"
             value={passcode}
-            onChange={(e) => setPasscode(e.target.value)}
+            onChange={(e) => {
+              setPasscode(e.target.value);
+              if (error) setError(null);
+            }}
+            disabled={loading || isLockedOut}
             required
             autoComplete="current-password"
             icon={<KeyRound className="h-4 w-4" />}
           />
 
+          <TurnstileWidget
+            siteKey={turnstileSiteKey}
+            configured={turnstileConfigured}
+            isTestMode={turnstileIsTestMode}
+            resetKey={turnstileResetKey}
+            error={turnstileError}
+            onTokenChange={handleTurnstileTokenChange}
+            onScriptError={handleTurnstileScriptError}
+          />
+
           <div className="pt-2">
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || isLockedOut || !turnstileConfigured || !turnstileToken}
               className="w-full flex items-center justify-center gap-2 rounded-md bg-blue-600 px-4 py-2.5 text-xs sm:text-sm font-semibold text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
                   <span>Sending Verification OTP...</span>
+                </>
+              ) : isLockedOut ? (
+                <>
+                  <Clock className="h-4 w-4" />
+                  <span>Account Locked ({formatCountdown(lockoutSecondsRemaining)})</span>
                 </>
               ) : (
                 <>
@@ -229,6 +434,8 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
                 setStep('credentials');
                 setOtp('');
                 setError(null);
+                setTurnstileToken(null);
+                setTurnstileResetKey((k) => k + 1);
               }}
               className="inline-flex items-center gap-1 font-semibold text-slate-600 hover:text-slate-900"
             >
@@ -239,7 +446,13 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
             <button
               type="button"
               disabled={cooldown > 0 || loading}
-              onClick={handleRequestOtp}
+              onClick={() => {
+                setStep('credentials');
+                setOtp('');
+                setError('Complete Security Verification and submit to send a fresh OTP.');
+                setTurnstileToken(null);
+                setTurnstileResetKey((k) => k + 1);
+              }}
               className="inline-flex items-center gap-1 font-semibold text-blue-600 hover:text-blue-700 disabled:text-slate-400"
             >
               <RefreshCw className="h-3 w-3" />
